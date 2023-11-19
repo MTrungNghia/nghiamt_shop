@@ -1,0 +1,28 @@
+.brand {
+    background-color: var(--white);
+    width: 100%;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 6px;
+}
+/* Màu sắc khi hover */
+.ant-menu-item:hover {
+    background-color: var(--primary);
+  }
+  
+  /* Màu sắc khi chọn */
+  .ant-menu-item-selected {
+    background-color: var(--primary);
+    color: #fff; /* Màu chữ khi chọn */
+  }
+  
+  /* Màu sắc khi trang đang active (đối với NavLink) */
+  .ant-menu-item-active {
+    background-color: var(--primary);
+    color: #fff; /* Màu chữ khi active */
+  }

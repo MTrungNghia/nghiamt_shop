@@ -1,0 +1,35 @@
+/* TableCustomer.module.scss */
+
+.custome-table {
+    /* Các styles chung cho bảng */
+  }
+  
+  .custome-table .ant-pagination {
+    background-color: #f0f0f0; /* Màu nền cho pagination */
+    border: none; /* Loại bỏ đường viền */
+  }
+  
+  .custome-table .ant-pagination-item,
+  .custome-table .ant-pagination-prev,
+  .custome-table .ant-pagination-next,
+  .custome-table .ant-pagination-jump-prev,
+  .custome-table .ant-pagination-jump-next {
+    background-color: #77d2a1; /* Màu nền cho các nút trang */
+    border-color: #77d2a1; /* Màu viền cho các nút trang */
+    color: #fff; /* Màu chữ cho các nút trang */
+  }
+  
+  .custome-table .ant-pagination-item:hover,
+  .custome-table .ant-pagination-prev:hover,
+  .custome-table .ant-pagination-next:hover,
+  .custome-table .ant-pagination-jump-prev:hover,
+  .custome-table .ant-pagination-jump-next:hover {
+    background-color: #77d2a1; /* Màu nền khi hover cho các nút trang */
+    border-color: #77d2a1; /* Màu viền khi hover cho các nút trang */
+    color: #fff; /* Màu chữ khi hover cho các nút trang */
+  }
+  
+  .custome-table .ant-spin-container {
+    background-color: #f0f0f0; /* Màu nền cho loading */
+  }
+  

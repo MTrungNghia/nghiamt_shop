@@ -1,0 +1,35 @@
+.wrapper {
+  background-color: var(--silver);
+}
+
+.inner {
+  width: 88%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  .custom-pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  .category_manager_title {
+    width: 100%;
+    background-color: var(--white);
+    height: 50px;
+    border-radius: 5%;
+    display: flex;
+    align-items: center;
+    
+}
+
+.category_manager_button {
+    margin-top: 8px;
+    display: flex;
+    justify-content: flex-end;
+}
+.custom_reload_button {
+  background-color: var(--primary) !important;
+}
+}
