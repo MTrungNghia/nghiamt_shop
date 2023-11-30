@@ -31,18 +31,28 @@ function AddProduct({ okOk, onCancel, title, open }) {
     const [Image7, setImage7] = useState(null);
     const [Image8, setImage8] = useState(null);
     const [Image9, setImage9] = useState(null);
+    const [loadingPImage, setLoadingPImage] = useState(false);
+    const [loadingImage1, setLoadingImage1] = useState(false);
+    const [loadingImage2, setLoadingImage2] = useState(false);
+    const [loadingImage3, setLoadingImage3] = useState(false);
+    const [loadingImage4, setLoadingImage4] = useState(false);
+    const [loadingImage5, setLoadingImage5] = useState(false);
+    const [loadingImage6, setLoadingImage6] = useState(false);
+    const [loadingImage7, setLoadingImage7] = useState(false);
+    const [loadingImage8, setLoadingImage8] = useState(false);
+    const [loadingImage9, setLoadingImage9] = useState(false);
 
 
-    const [selectImageMain, setSelectedImageMain] = useState(null);
-    const [selectImage1, setselectImagen1] = useState(null);
-    const [selectImage2, setselectImagen2] = useState(null);
-    const [selectImage3, setselectImagen3] = useState(null);
-    const [selectImage4, setselectImagen4] = useState(null);
-    const [selectImage5, setselectImagen5] = useState(null);
-    const [selectImage6, setselectImagen6] = useState(null);
-    const [selectImage7, setselectImagen7] = useState(null);
-    const [selectImage8, setselectImagen8] = useState(null);
-    const [selectImage9, setselectImagen9] = useState(null);
+    const [selectImageMain, setSelectedImageMain] = useState('');
+    const [selectImage1, setselectImage1] = useState('');
+    const [selectImage2, setselectImage2] = useState('');
+    const [selectImage3, setselectImage3] = useState('');
+    const [selectImage4, setselectImage4] = useState('');
+    const [selectImage5, setselectImage5] = useState('');
+    const [selectImage6, setselectImage6] = useState('');
+    const [selectImage7, setselectImage7] = useState('');
+    const [selectImage8, setselectImage8] = useState('');
+    const [selectImage9, setselectImage9] = useState('');
 
     useEffect(() => {
         axios.get("http://127.0.0.1:8000/category/list/")
@@ -101,9 +111,6 @@ function AddProduct({ okOk, onCancel, title, open }) {
             });
     };
 
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState('');
-
     const beforeUpload = (file) => {
         const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
         if (!isJpgOrPng) {
@@ -122,22 +129,23 @@ function AddProduct({ okOk, onCancel, title, open }) {
         reader.readAsDataURL(img);
     };
 
-    const handleChange = (info) => {
-        setImage1(info.file.originFileObj);
+    const handleChange = (info, setImage, setSelectImage, setLoadingPImage) => {
+        console.log()
+        setSelectImage(info.file.originFileObj);
         if (info.file.status === 'uploading') {
-            setLoading(true);
+            setLoadingPImage(true);
             return;
         }
         if (info.file.status === 'done') {
             // Get this url from response in real world.
             getBase64(info.file.originFileObj, (url) => {
-                setLoading(false);
-                setImageUrl(url);
+                setLoadingPImage(false);
+                setImage(url);
             });
         }
     };
 
-    const uploadButton = (
+    const UploadButton = ({ loading }) => (
         <div>
             {loading ? <LoadingOutlined /> : <PlusOutlined />}
             <div style={{ marginTop: 8 }}>Upload</div>
@@ -208,14 +216,26 @@ function AddProduct({ okOk, onCancel, title, open }) {
                         </div>
                         <div className={cx('img_product')}>
                             <span>Ảnh sản phẩm:</span>
-                            <input type="file" name="productImage" onChange={(e) => handleImageChange(e, setProductImage, setSelectedImageMain)} />
+                            <Upload
+                                name="avatar"
+                                listType="picture-card"
+                                className="avatar-uploader"
+                                showUploadList={false}
+                                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                beforeUpload={beforeUpload}
+                                onChange={(e) => handleChange(e, setProductImage, setSelectedImageMain, setLoadingPImage)}
+                            >
+                                {productImage ? <img src={productImage} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingPImage} />}
+                            </Upload>
+                            {/* <input type="file" name="productImage" onChange={(e) => handleImageChange(e, setProductImage, setSelectedImageMain)} />
                             {selectImageMain && (<img src={selectImageMain} alt="Imagea saaa" />)
-                            }
+                            } */}
+
                         </div>
                         <div className={cx('child_image_product')}>
                             <span>Ảnh mô tả thêm về sản phẩm:</span>
                             <ul>
-                                <li><input type="file" name="image" onChange={(e) => handleImageChange(e, setImage1, setselectImagen1)} />
+                                {/* <li><input type="file" name="image" onChange={(e) => handleImageChange(e, setImage1, setselectImagen1)} />
                                     {selectImage1 && (<img src={selectImage1} alt="Imagea saaa" />)
                                     }</li>
                                 <li><input type="file" name="image" onChange={(e) => handleImageChange(e, setImage2, setselectImagen2)} />
@@ -241,7 +261,7 @@ function AddProduct({ okOk, onCancel, title, open }) {
                                     }</li>
                                 <li><input type="file" name="image" onChange={(e) => handleImageChange(e, setImage9, setselectImagen9)} />
                                     {selectImage9 && (<img src={selectImage9} alt="Imagea saaa" />)
-                                    }</li>
+                                    }</li> */}
 
                                 <li>
                                     <Upload
@@ -251,9 +271,113 @@ function AddProduct({ okOk, onCancel, title, open }) {
                                         showUploadList={false}
                                         action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                                         beforeUpload={beforeUpload}
-                                        onChange={handleChange}
+                                        onChange={(e) => handleChange(e, setImage1, setselectImage1, setLoadingImage1)}
                                     >
-                                        {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                                        {Image1 ? <img src={Image1} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage1} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage2, setselectImage2, setLoadingImage2)}
+                                    >
+                                        {Image2 ? <img src={Image2} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage2} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage3, setselectImage3, setLoadingImage3)}
+                                    >
+                                        {Image3 ? <img src={productImage} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage3} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage4, setselectImage4, setLoadingImage4)}
+                                    >
+                                        {Image4 ? <img src={Image4} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage4} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage5, setselectImage5, setLoadingImage5)}
+                                    >
+                                        {Image5 ? <img src={productImage} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage5} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage6, setselectImage6, setLoadingImage6)}
+                                    >
+                                        {Image6 ? <img src={Image6} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage6} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage7, setselectImage7, setLoadingImage7)}
+                                    >
+                                        {Image7 ? <img src={Image7} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage7} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage8, setselectImage8, setLoadingImage8)}
+                                    >
+                                        {Image8 ? <img src={Image8} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage8} />}
+                                    </Upload>
+                                </li>
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={(e) => handleChange(e, setImage9, setselectImage9, setLoadingImage9)}
+                                    >
+                                        {Image9 ? <img src={Image9} alt="Ảnh sản phẩm" style={{ width: '100%' }} /> : <UploadButton loading={loadingImage9} />}
                                     </Upload>
                                 </li>
                             </ul>
