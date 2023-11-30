@@ -15,7 +15,7 @@ import Comments from './Comments';
 import Cookies from 'js-cookie';
 import RateProduct from './RateProduct';
 import CustomButton from '~/components/Antd/Button';
-import { Alert } from 'antd';
+import { Alert, notification } from 'antd';
 
 const cx = classNames.bind(styles);
 
@@ -27,8 +27,18 @@ function Product() {
     const [productNumber, setProductNumber] = useState(1);
     const [visitRatePorduct, setVisitRatePorduct] = useState(false);
     const [dataRateProduct, setDataRateProduct] = useState(null);
+    const [reload, setReload] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotificationWithIcon = (type, message, description) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
 
     useEffect(() => {
         axios.get(`http://127.0.0.1:8000/product/detail/${productName}/`)
@@ -45,7 +55,7 @@ function Product() {
             .catch((error) => {
                 console.log(error)
             })
-    }, []);
+    }, [reload]);
 
     useEffect(() => {
         axios.get(`http://127.0.0.1:8000/product/user-comment/${productName}/`)
@@ -115,12 +125,13 @@ function Product() {
             },
         })
             .then((response) => {
-                alert("Thêm sản phẩm vào giỏ hàng thành công");
+                // alert("Thêm sản phẩm vào giỏ hàng thành công");
+                openNotificationWithIcon('success', 'Thêm sản phẩm thành công', `Bạn đã thêm ${product.product_name} vào giỏ hàng thành công`);
                 console(response);
             })
             .catch(function (error) {
                 if (error.response.status === 403) {
-                    alert("Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!");
+                    openNotificationWithIcon('warning', 'Thông báo', 'Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!');
                     navigate(routes.login);
                 }
             });
@@ -136,11 +147,13 @@ function Product() {
 
     const handleOK = () => {
         setVisitRatePorduct(false);
+        setReload(!reload);
     }
 
 
     return (
         <>
+            {contextHolder}
             {visitRatePorduct && (
                 <RateProduct
                     onCancel={handleCancel}
@@ -287,7 +300,7 @@ function Product() {
                             <CustomButton onClick={handleRateProduct}>Xem đánh giá sản phẩm</CustomButton>
                         </div>
                         <div>
-                            <Comments user_id={isUserComment.user_id} name={isUserComment.name} slug={product.slug} is_comment={isUserComment.is_comment} />
+                            <Comments user_id={isUserComment.user_id} name={isUserComment.name} slug={product.slug} onOK={handleOK} is_comment={isUserComment.is_comment} />
                             {/* <Button primary rightIcon={<FontAwesomeIcon icon={faChevronDown} />}>Xem thêm</Button> */}
                         </div>
                     </div>

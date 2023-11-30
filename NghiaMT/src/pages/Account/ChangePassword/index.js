@@ -10,6 +10,7 @@ import axios from "axios";
 import Button from "~/components/Button";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
+import { notification } from "antd";
 
 const cx = classNames.bind(styles);
 
@@ -106,105 +107,119 @@ function ChangePassword() {
                             setNotiDiffPass(false);
                             setNotiShortPass(false);
                             reset();
-                            alert("Thay đổi mật khẩu thành công!");
+                            openNotificationWithIcon('success', 'Thay đổi mật khẩu', `Thay đổi mật khẩu thành công!`);
+                            // a1234567
                         }
                     })
                     .catch(function (error) {
                         // Xử lý lỗi (nếu có)
-                        console.error(error);
+                        console.log(error.response.data.error);
                     });
             }
         }
 
     }
 
-    return (<div className={cx('wrapper')}>
-        <div className={cx('inner')}>
-            <div className={cx('breadcrumb')}>
-                <Link to={routes.home}>Trang chủ&nbsp;</Link>
-            </div>
-            <div className={cx('content')}>
-                <div className={cx('profile__detail')}>
-                    <div className={cx('profile__detail--main')}>
-                        <div className={cx('order-history')}>
-                            <Link to={routes.orders}>
-                                <img src={images.orderHistory} alt="Lịch sử đơn hàng" />
-                                <span>Lịch sử đơn hàng</span>
-                            </Link>
-                        </div>
-                        <div className={cx('profile__detail--welcome')}>
-                            <Link>
-                                <img src={images.account} alt="Account" />
-                                {user !== null && (
-                                    <span>Xin chào, <span className={cx('profile__detail--name')}>{user.first_name}</span></span>
-                                )}
-                            </Link>
-                        </div>
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotificationWithIcon = (type, message, description) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
+
+    return (
+        <>
+            {contextHolder}
+            <div className={cx('wrapper')}>
+                <div className={cx('inner')}>
+                    <div className={cx('breadcrumb')}>
+                        <Link to={routes.home}>Trang chủ&nbsp;</Link>
                     </div>
-                    {user !== null && (
-                        <div className={cx('profile__detail--infor')}>
-                            <h3>Thông tin tài khoản</h3>
-                            {notiWrongPass && (
-                                <div className={cx('noti')}>
-                                    <span>Mật khẩu sai, nhập lại.</span>
+                    <div className={cx('content')}>
+                        <div className={cx('profile__detail')}>
+                            <div className={cx('profile__detail--main')}>
+                                <div className={cx('order-history')}>
+                                    <Link to={routes.orders}>
+                                        <img src={images.orderHistory} alt="Lịch sử đơn hàng" />
+                                        <span>Lịch sử đơn hàng</span>
+                                    </Link>
                                 </div>
-                            )}
-                            {notiShortPass && (
-                                <div className={cx('noti')}>
-                                    <span>Mật khẩu phải từ 6 ký tự trở lên.</span>
+                                <div className={cx('profile__detail--welcome')}>
+                                    <Link>
+                                        <img src={images.account} alt="Account" />
+                                        {user !== null && (
+                                            <span>Xin chào, <span className={cx('profile__detail--name')}>{user.first_name}</span></span>
+                                        )}
+                                    </Link>
                                 </div>
-                            )}
-                            {notiDiffPass && (
-                                <div className={cx('noti')}>
-                                    <span>Mật khẩu thay đổi cần phải giống nhau.</span>
-                                </div>
-                            )}
+                            </div>
+                            {user !== null && (
+                                <div className={cx('profile__detail--infor')}>
+                                    <h3>Thông tin tài khoản</h3>
+                                    {notiWrongPass && (
+                                        <div className={cx('noti')}>
+                                            <span>Mật khẩu sai, nhập lại.</span>
+                                        </div>
+                                    )}
+                                    {notiShortPass && (
+                                        <div className={cx('noti')}>
+                                            <span>Mật khẩu phải từ 6 ký tự trở lên.</span>
+                                        </div>
+                                    )}
+                                    {notiDiffPass && (
+                                        <div className={cx('noti')}>
+                                            <span>Mật khẩu thay đổi cần phải giống nhau.</span>
+                                        </div>
+                                    )}
 
-                            <span>Để đảm bảo tính bảo mật vui lòng đặt mật khẩu với ít nhất 8 kí tự</span>
-                            <form onSubmit={handleSubmit} className={cx('from__change-password')}>
-                                <div className={cx('input__group')}>
-                                    <span>Mật khẩu cũ *:</span>
-                                    <input type="password" value={password} name="password"
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
+                                    <span>Để đảm bảo tính bảo mật vui lòng đặt mật khẩu với ít nhất 8 kí tự</span>
+                                    <form onSubmit={handleSubmit} className={cx('from__change-password')}>
+                                        <div className={cx('input__group')}>
+                                            <span>Mật khẩu cũ *:</span>
+                                            <input type="password" value={password} name="password"
+                                                onChange={(e) => setPassword(e.target.value)}
+                                            />
+                                        </div>
+                                        <div className={cx('input__group')}>
+                                            <span>Mật khẩu mới *:</span>
+                                            <input type="password" name="new_password" value={newPassword}
+                                                onChange={(e) => setNewPassword(e.target.value)} />
+                                        </div>
+                                        <div className={cx('input__group')}>
+                                            <span>Xác nhận lại mật khẩu *:</span>
+                                            <input type="password" name="confirm_password" value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)} />
+                                        </div>
+                                        <div>
+                                            <Button type="submit" className={cx('btn-add')} primary >Thay đổi mật khẩu</Button>
+                                        </div>
+                                    </form>
                                 </div>
-                                <div className={cx('input__group')}>
-                                    <span>Mật khẩu mới *:</span>
-                                    <input type="password" name="new_password" value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)} />
-                                </div>
-                                <div className={cx('input__group')}>
-                                    <span>Xác nhận lại mật khẩu *:</span>
-                                    <input type="password" name="confirm_password" value={confirmPassword}
-                                        onChange={(e) => setConfirmPassword(e.target.value)} />
-                                </div>
-                                <div>
-                                    <Button type="submit" className={cx('btn-add')} primary >Thay đổi mật khẩu</Button>
-                                </div>
-                            </form>
+                            )}
                         </div>
-                    )}
-                </div>
-                <div className={cx('profile__function')}>
-                    <ul className={cx('profile__function--list')}>
-                        <li>
-                            <ListLi to={routes.profile} icon={faUser} title={"Thông tin cá nhân"} />
-                        </li>
-                        <li>
-                            <ListLi to={routes.addressSaved} icon={faLocation} title={"Địa chỉ đã lưu (0)"} />
-                        </li>
-                        <li>
-                            <ListLi to={routes.changePassword} icon={faExchange} title={"Đổi mật khẩu"} />
-                        </li>
-                        <li>
-                            <ListLi onClick={handleLogout} icon={faPowerOff} title={"Đăng xuất"} />
-                        </li>
-                    </ul>
-                </div>
+                        <div className={cx('profile__function')}>
+                            <ul className={cx('profile__function--list')}>
+                                <li>
+                                    <ListLi to={routes.profile} icon={faUser} title={"Thông tin cá nhân"} />
+                                </li>
+                                <li>
+                                    <ListLi to={routes.addressSaved} icon={faLocation} title={"Địa chỉ đã lưu (0)"} />
+                                </li>
+                                <li>
+                                    <ListLi to={routes.changePassword} icon={faExchange} title={"Đổi mật khẩu"} />
+                                </li>
+                                <li>
+                                    <ListLi onClick={handleLogout} icon={faPowerOff} title={"Đăng xuất"} />
+                                </li>
+                            </ul>
+                        </div>
 
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </>
     );
 }
 

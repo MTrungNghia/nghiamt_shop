@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from 'js-cookie';
 import { setAuth } from "~/redux/slice/authSlide";
+import { Alert, notification } from 'antd';
 
 const cx = classNames.bind(styles);
 
@@ -15,9 +16,15 @@ function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     // const [userLogin, setUserLogin] = useState(null);
-
     const navigate = useNavigate();
+    const [api, contextHolder] = notification.useNotification();
 
+    const openNotificationWithIcon = (type, message, description) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
@@ -41,6 +48,9 @@ function Login() {
         localStorage.clear();
         setAuth(false);
         axios.defaults.headers.common['Authorization'] = null;
+        const sessionId = Cookies.get('sessionid', { domain: 'localhost', path: '/' });
+        console.log('Giá trị của sessionid:', sessionId);
+        Cookies.remove('sessionid');
         axios.post("account/login/", {
             email: email,
             password: password,
@@ -52,49 +62,56 @@ function Login() {
                 const token = rep.data.token;
                 axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
                 localStorage.setItem('authToken', token);
-                navigate(routes.home);
-
+                openNotificationWithIcon('success', 'Đăng nhập thành công', `Đăng nhập tài khoản thành công!`);
+                // navigate(routes.home);
+                setTimeout(() => {
+                    navigate(routes.home);
+                }, 2000);
             })
             .catch((error) => {
-
+                openNotificationWithIcon('error', 'Đăng nhập lỗi', `Hãy nhập lại thông tin hoặc liên hệ cho Admin!`);
             })
     }
 
     return (
-        <div className={cx("wrapper")}>
-            <div className={cx("inner")}>
-                <div className={cx("login__title")}>
-                    <h4>Đăng nhập</h4>
-                    <div className={cx('url')}>
-                        <Link to={routes.home}>Trang chủ </Link>
-                        <span>/ Đăng nhập tài khoản</span>
+        <>
+            {contextHolder}
+            <div className={cx("wrapper"
+            )}>
+                <div className={cx("inner")}>
+                    <div className={cx("login__title")}>
+                        <h4>Đăng nhập</h4>
+                        <div className={cx('url')}>
+                            <Link to={routes.home}>Trang chủ </Link>
+                            <span>/ Đăng nhập tài khoản</span>
+                        </div>
                     </div>
-                </div>
-                <form onSubmit={handleLogin} className={cx("login__form")}>
-                    <input placeholder="Email" value={email} name="email" onChange={(e) => setEmail(e.target.value)} />
-                    <input type="password" placeholder="Mật khẩu" value={password} name="password" onChange={(e) => setPassword(e.target.value)} />
-                    <div className={cx("login__form--btn")}>
-                        <Button type="submit">Đăng nhập</Button>
-                        <Link to={routes.forgotPassword}>Quên mật khẩu?</Link>
+                    <form onSubmit={handleLogin} className={cx("login__form")}>
+                        <input placeholder="Email" value={email} name="email" onChange={(e) => setEmail(e.target.value)} />
+                        <input type="password" placeholder="Mật khẩu" value={password} name="password" onChange={(e) => setPassword(e.target.value)} />
+                        <div className={cx("login__form--btn")}>
+                            <Button type="submit">Đăng nhập</Button>
+                            <Link to={routes.forgotPassword}>Quên mật khẩu?</Link>
+                        </div>
+                    </form>
+                    <div className={cx("diferent__login")}>
+                        <div className={cx("diferent__login--title")}>
+                            <span>Hoặc đăng nhập qua</span>
+                        </div>
+                        <div className={cx("diferent__login--btns")}>
+                            <img src={images.facebookBtn.default} alt="Đăng nhập bằng Facebook" />
+                            <img src={images.googleBtn.default} alt="Đăng nhập bằng Google" />
+                        </div>
                     </div>
-                </form>
-                <div className={cx("diferent__login")}>
-                    <div className={cx("diferent__login--title")}>
-                        <span>Hoặc đăng nhập qua</span>
+                    <div className={cx("register")}>
+                        <h4>Đăng ký</h4>
+                        <span>Tạo tài khoản để quản lý đơn hàng, và các thông tin thanh toán, gửi hàng một cách đơn giản hơn.</span>
+                        <Button to={routes.register}>Tạo tài khoản</Button>
+                        <Button to={routes.home}>Quay về trang chủ</Button>
                     </div>
-                    <div className={cx("diferent__login--btns")}>
-                        <img src={images.facebookBtn.default} alt="Đăng nhập bằng Facebook" />
-                        <img src={images.googleBtn.default} alt="Đăng nhập bằng Google" />
-                    </div>
-                </div>
-                <div className={cx("register")}>
-                    <h4>Đăng ký</h4>
-                    <span>Tạo tài khoản để quản lý đơn hàng, và các thông tin thanh toán, gửi hàng một cách đơn giản hơn.</span>
-                    <Button to={routes.register}>Tạo tài khoản</Button>
-                    <Button to={routes.home}>Quay về trang chủ</Button>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 

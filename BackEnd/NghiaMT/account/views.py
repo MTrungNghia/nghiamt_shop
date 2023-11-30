@@ -47,7 +47,8 @@ def AdminUpdateUser(request, id):
     user.first_name = data['first_name']
     user.last_name = data['last_name']
     user.email = data['email']
-    user.password = data['password']
+    if 'password' in data:
+        user.password = data['password']
     user.is_admin = data['is_admin']
 
     user.save()
@@ -366,11 +367,52 @@ class UserAddressAPI(APIView):
             serializer.save()
             return Response({'success': 'Address create successed!'}, status=201)
         return Response({'error': 'Address create failed!'}, status=400)
+    
+def setAllUserAddressIsFalse(userId):
+    user = User.objects.get(id=userId)
+    UserAddress.objects.filter(user=user).update(is_default=False)
+
+
+@api_view(['POST'])
+def userAddressCreate(request):
+    data = request.data
+    userId = data.get('user')
+    isDefault = data.get('is_default')
+    user = User.objects.get(id=userId)
+    listUserAddress = UserAddress.objects.filter(user=user)
+    if(isDefault):
+        listUserAddress.update(is_default=False)
+    elif(len(listUserAddress) == 0):
+        data['is_default'] = True
+    serializer = UserAddressSerializers(data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+
+    return Response(serializer.errors, status=400)
+
+@api_view(['POST'])
+def userAddressUpdate(request):
+    data = request.data
+    userId = data.get('user')
+    id = data.get('id')
+    isDefault = data.get('is_default')
+    userAddress = UserAddress.objects.get(id=id)
+    if(isDefault):
+        setAllUserAddressIsFalse(userId)
+    serializer = UserAddressSerializers(userAddress, data=data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+
+    return Response(serializer.errors, status=400)
 
 @api_view(['GET'])
 def getUserAddressByUser(request, id):
     user = User.objects.get(id=id)
-    userAddresses = UserAddress.objects.filter(user=user)
+    userAddresses = UserAddress.objects.filter(user=user).order_by('-id')
     userAddressesSerializer = UserAddressSerializers(userAddresses, many=True)
 
     return Response(userAddressesSerializer.data)
@@ -380,12 +422,14 @@ def ChangePassword(request, id):
     user = User.objects.get(id=id)
     if user:
         data = request.data
+        if not user.check_password(data['password']):
+            return Response({'error': 'Thông tin mật khẩu không chính xác!'}, status=400)
         user.set_password(data['new_password'])
         user.save()  # Lưu mật khẩu mới vào cơ sở dữ liệu
         serializer = UserSerializer(user)
         return Response({'success': 'Update password succeeded!'}, status=201)
     
-    return Response({'error': 'Change password failed!'}, status=400)
+    return Response({'error': 'Lỗi thay đổi mật khẩu!'}, status=400)
 
 # set password cho admin
 @api_view(['POST'])
@@ -393,9 +437,18 @@ def ChangePassword1(request, id):
     user = User.objects.get(id=id)
     if user:
         data = request.data
+        if not user.check_password(data['password']):
+            return Response({'error': 'Change password failed!'}, status=400)
         user.set_password(data['new_password'])
         user.save()  # Lưu mật khẩu mới vào cơ sở dữ liệu
         serializer = UserSerializer(user)
         return Response({'success': 'Update password succeeded!'}, status=201)
     
     return Response({'error': 'Change password failed!'}, status=400)
+
+@api_view(['DELETE'])
+def deleteUserAddress(request, pk):
+    userAddress = UserAddress.objects.get(id=pk)
+    userAddress.delete()
+
+    return Response("UserAddress succesfully delete")

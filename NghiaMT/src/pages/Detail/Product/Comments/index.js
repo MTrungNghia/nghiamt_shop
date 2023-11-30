@@ -14,7 +14,7 @@ const paginationpPosition = {
     align: 'end',
 }
 
-function Comments({ user_id, name, is_comment, slug }) {
+function Comments({ user_id, name, is_comment, slug, onOK }) {
     console.log(is_comment);
     const [enableComment, setEnableComment] = useState(false);
     const [reload, setReload] = useState(false);
@@ -56,6 +56,7 @@ function Comments({ user_id, name, is_comment, slug }) {
             .then((res) => {
                 setData(res.data);
                 setReload(!reload);
+                onOK();
                 setHiddenAddComment(false);
             })
             .catch((error) => {

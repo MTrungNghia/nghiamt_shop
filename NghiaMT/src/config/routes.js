@@ -9,6 +9,9 @@ const routes = {
 
     cateDetail: 'category/:categoryName',
     introduce: '/introduce',
+    promotion: '/promotion',
+    new: '/news',
+    contact: '/contacts',
 
     login: '/login',
     register: '/register',

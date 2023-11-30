@@ -123,6 +123,7 @@ def GetDetailOrderByUser(request, id):
         'name': user_address.full_name,
         'address': user_address.address,
         'quantity': order_data['quantity'],
+        'phone_number': user_address.phone_number,
         # 'discount_code': order['discount_code'],
         'order_status': order_data['order_status'],
         'payment_method': order_data['payment_method'],
@@ -139,7 +140,7 @@ def GetDetailOrderByUser(request, id):
 
 @api_view(['GET'])
 def GetListOrder(request):
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by('-id')
     serializer = OrderSerializers(orders, many=True)
 
     order_list = []

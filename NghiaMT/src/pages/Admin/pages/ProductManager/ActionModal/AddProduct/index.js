@@ -3,13 +3,19 @@ import styles from "./AddProduct.module.scss";
 import { useEffect, useState } from "react";
 import Button from "~/components/Button";
 import axios from "axios";
-import { Divider, Modal } from "antd";
+import { Divider, Modal, message, Upload } from "antd";
+import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 const cx = classNames.bind(styles);
 
 function AddProduct({ okOk, onCancel, title, open }) {
-    const [listCategory, setListCategory] = useState([])
-
+    const [listCategory, setListCategory] = useState([]);
+    if (typeof onOk !== 'function') {
+        console.warn('onOk should be a function');
+    }
+    console.log(okOk);
+    console.log(onCancel);
+    console.log(title);
     const [category, setCategory] = useState(null);
     const [productName, setProductName] = useState("");
     const [productDes, setProductDes] = useState("");
@@ -80,13 +86,12 @@ function AddProduct({ okOk, onCancel, title, open }) {
         formData.append(`ImageList`, Image7);
         formData.append(`ImageList`, Image8);
         formData.append(`ImageList`, Image9);
-
         // Gửi dữ liệu đến server
         axios.post('http://127.0.0.1:8000/product/create/', formData)
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
-                // okOk();
+                onCancel();
                 alert("thanhf coong");
             })
             .catch(function (error) {
@@ -94,7 +99,50 @@ function AddProduct({ okOk, onCancel, title, open }) {
                 console.error(error);
                 alert("Loi");
             });
-    }
+    };
+
+    const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
+
+    const beforeUpload = (file) => {
+        const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+        if (!isJpgOrPng) {
+            message.error('You can only upload JPG/PNG file!');
+        }
+        const isLt2M = file.size / 1024 / 1024 < 2;
+        if (!isLt2M) {
+            message.error('Image must smaller than 2MB!');
+        }
+        return isJpgOrPng && isLt2M;
+    };
+
+    const getBase64 = (img, callback) => {
+        const reader = new FileReader();
+        reader.addEventListener('load', () => callback(reader.result));
+        reader.readAsDataURL(img);
+    };
+
+    const handleChange = (info) => {
+        setImage1(info.file.originFileObj);
+        if (info.file.status === 'uploading') {
+            setLoading(true);
+            return;
+        }
+        if (info.file.status === 'done') {
+            // Get this url from response in real world.
+            getBase64(info.file.originFileObj, (url) => {
+                setLoading(false);
+                setImageUrl(url);
+            });
+        }
+    };
+
+    const uploadButton = (
+        <div>
+            {loading ? <LoadingOutlined /> : <PlusOutlined />}
+            <div style={{ marginTop: 8 }}>Upload</div>
+        </div>
+    );
 
     return (
         <Modal
@@ -104,7 +152,7 @@ function AddProduct({ okOk, onCancel, title, open }) {
             footer={(
                 <>
                     <Button effect onClick={onCancel}>Hủy</Button>
-                    <Button primary effect type="submit" onClick={okOk}>Thêm sản phẩm</Button>
+                    <Button primary effect onClick={handleSubmit}>Thêm sản phẩm</Button>
                 </>
             )}
             okText="Thêm sản phẩm"
@@ -194,6 +242,20 @@ function AddProduct({ okOk, onCancel, title, open }) {
                                 <li><input type="file" name="image" onChange={(e) => handleImageChange(e, setImage9, setselectImagen9)} />
                                     {selectImage9 && (<img src={selectImage9} alt="Imagea saaa" />)
                                     }</li>
+
+                                <li>
+                                    <Upload
+                                        name="avatar"
+                                        listType="picture-card"
+                                        className="avatar-uploader"
+                                        showUploadList={false}
+                                        action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                        beforeUpload={beforeUpload}
+                                        onChange={handleChange}
+                                    >
+                                        {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                                    </Upload>
+                                </li>
                             </ul>
                         </div>
                     </div>

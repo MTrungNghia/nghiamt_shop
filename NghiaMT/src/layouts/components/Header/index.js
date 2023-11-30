@@ -20,13 +20,13 @@ function Header() {
     function ItemNavbar({
         item }) {
         return (<div className={cx('navbar__category')}>
-            <Link title={item.title} to={item.link} className={cx('navbar__category--title')}>
+            <Link title={item.title} to={`/category${item.link}`} className={cx('navbar__category--title')}>
                 <h5>{item.title}</h5>
             </Link>
             {item.itemsCategory && (
                 <div className={cx('navbar__category--items')}>
                     {item.itemsCategory.map((childItem, index) => (
-                        <Link title={childItem.title} to={childItem.link} key={index}>{childItem.title}</Link>
+                        <Link title={childItem.title} to={`/category/${childItem.link}`} key={index}>{childItem.title}</Link>
                     ))}
                 </div>
             )}
@@ -89,13 +89,13 @@ function Header() {
                                 <Link to={config.routes.introduce} title="Giới thiệu">Giới thiệu</Link>
                             </li>
                             <li>
-                                <Link title="Khuyến mãi hot">Khuyến mãi hot</Link>
+                                <Link to={config.routes.promotion} title="Khuyến mãi hot">Khuyến mãi hot</Link>
                             </li>
                             <li>
-                                <Link title="Tin tức">Tin tức</Link>
+                                <Link to={config.routes.new} title="Tin tức">Tin tức</Link>
                             </li>
                             <li>
-                                <Link title="Liên hệ">Liên hệ</Link>
+                                <Link to={config.routes.contact} title="Liên hệ">Liên hệ</Link>
                             </li>
                             <li
                                 className={cx('products__navbar')}

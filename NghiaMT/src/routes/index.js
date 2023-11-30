@@ -21,6 +21,9 @@ import StatiscalReports from "~/pages/Admin/pages/StatiscalReports";
 import CustomerManager from "~/pages/Admin/pages/CustomerManager";
 import OrderManager from "~/pages/Admin/pages/OrderManager";
 import SeacrhImage from "~/pages/Search/Image";
+import Promotion from "~/pages/Promotion";
+import News from "~/pages/New";
+import Contact from "~/pages/Contact";
 
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -36,6 +39,10 @@ export const publicRoutes = [
 
     { path: config.routes.cateDetail, component: Category },
     { path: config.routes.introduce, component: Introduce },
+    { path: config.routes.promotion, component: Promotion },
+    { path: config.routes.new, component: News },
+    { path: config.routes.contact, component: Contact },
+
 
     { path: config.routes.profile, component: Profile },
     { path: config.routes.addressSaved, component: AddressSaved },
