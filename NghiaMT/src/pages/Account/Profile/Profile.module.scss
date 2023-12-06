@@ -125,3 +125,13 @@
     }
 
 }
+.profile__detail--infor {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 12px;
+    h3 {
+        color: var(--primary);
+    }
+}

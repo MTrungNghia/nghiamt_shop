@@ -20,6 +20,7 @@ import CustomButton from '~/components/Antd/Button';
 import AddCategory from './ActionModal/AddCategory';
 import EditCategory from './ActionModal/EditCatgory';
 import DeleteCategory from './ActionModal/DeleteCategory';
+import RightNavbar from '~/pages/Account/components/RightNavbar';
 
 const { Title } = Typography;
 const cx = classNames.bind(styles);
@@ -280,23 +281,27 @@ const CategoryManager = () => {
                         </Form>
                     </div>
                 </Modal> */}
+            <RightNavbar>
+                <>
+                    <div style={{ padding: '0 6px' }}>
+                        <div className={cx('category_manager_title')}>
+                            <Title level={3}>Thông tin loại sản phẩm của cửa hàng:</Title>
+                        </div>
+                        <div className={cx('category_manager_button')}>
+                            <CustomButton
+                                type="primary"
+                                shape="circle"
+                                icon={<ReloadOutlined className="reload-icon" />}
+                                // onClick={handleReload}
+                                className={cx('custom_reload_button')}
+                            />
+                            <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm loại sản phẩm</Button>
+                        </div>
+                        <Table style={{ marginTop: '10px' }} columns={columns} dataSource={listCategory} pagination={{ position: ['buttomRight'] }} />
+                    </div>
+                </>
+            </RightNavbar>
 
-            <div style={{ padding: '0 6px' }}>
-                <div className={cx('category_manager_title')}>
-                    <Title level={3}>Thông tin loại sản phẩm của cửa hàng:</Title>
-                </div>
-                <div className={cx('category_manager_button')}>
-                    <CustomButton
-                        type="primary"
-                        shape="circle"
-                        icon={<ReloadOutlined className="reload-icon" />}
-                        // onClick={handleReload}
-                        className={cx('custom_reload_button')}
-                    />
-                    <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm loại sản phẩm</Button>
-                </div>
-                <Table style={{ marginTop: '10px' }} columns={columns} dataSource={listCategory} pagination={{ position: ['buttomRight'] }} />
-            </div>
         </>
     );
 };

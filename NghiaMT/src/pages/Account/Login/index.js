@@ -7,6 +7,7 @@ import images from "~/assets/images";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from 'js-cookie';
+import { useSelector } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
 import { Alert, notification } from 'antd';
 
@@ -15,6 +16,8 @@ const cx = classNames.bind(styles);
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const auth = useSelector(state => state.auth.value);
+    console.log(auth);
     // const [userLogin, setUserLogin] = useState(null);
     const navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
@@ -27,20 +30,23 @@ function Login() {
     };
 
     useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        console.log(auth);
+        if (!(auth === false)) {
+            navigate(routes.home);
         }
-        axios.get('account/user/')
-            .then((res) => {
-                navigate(routes.home);
-
-            })
-            .catch(function (error) {
-                localStorage.clear();
-                setAuth(false);
-                axios.defaults.headers.common['Authorization'] = null;
-            });
+        // const token = localStorage.getItem('authToken');
+        // if (token) {
+        //     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // }
+        // axios.get('account/user/')
+        //     .then((res) => {
+        //         navigate(routes.home);
+        //     })
+        //     .catch(function (error) {
+        //         localStorage.clear();
+        //         setAuth(false);
+        //         axios.defaults.headers.common['Authorization'] = null;
+        //     });
     }, []);
 
     function handleLogin(e) {

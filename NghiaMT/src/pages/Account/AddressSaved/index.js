@@ -13,6 +13,7 @@ import { setAuth } from "~/redux/slice/authSlide";
 import AddAddress from "./ActionModal/AddAddress";
 import EditAddress from "./ActionModal/EditAddress";
 import DeleteAddress from "./ActionModal/DeleteAddress";
+import RightNavbar from "../components/RightNavbar";
 
 const cx = classNames.bind(styles);
 
@@ -136,7 +137,26 @@ function AddressSaved() {
                 // userId={user.id}
                 />
             )}
-            <div className={cx('wrapper')}>
+            <RightNavbar>
+                <>
+                    <Button effect className={cx('btn-add')} onClick={() => setVisitableAdd(true)} primary leftIcon={<FontAwesomeIcon icon={faHome} />} >Thêm địa chỉ</Button>
+                    {userAddress !== null && userAddress.map((address, index) => (
+                        <div key={index} className={cx('profile__detail--address')}>
+                            <div className={cx('address__detail')}>
+                                <span><b>Họ tên:</b> {address.full_name}{address.is_default && (<span className={cx('address__default')}> (Địa chỉ mặc định)</span>)}</span>
+                                <span><b>Địa chỉ:</b> {address.wards + " - " + address.district + " - " + address.province}</span>
+                                <span><b>Địa chỉ chi tiết:</b> {address.address}</span>
+                                <span><b>Số điện thoại:</b> {address.phone_number}</span>
+                            </div>
+                            <div className={cx('profile__detail--btn')}>
+                                <button onClick={() => onClickEdit(address)}><FontAwesomeIcon icon={faPenToSquare} />Sửa</button>
+                                {!address.is_default && (<button onClick={() => onClickDelete(address)}><FontAwesomeIcon icon={faRecycle} /> Xóa</button>)}
+                            </div>
+                        </div>
+                    ))}
+                </>
+            </RightNavbar>
+            {/* <div className={cx('wrapper')}>
                 <div className={cx('inner')}>
                     <div className={cx('breadcrumb')}>
                         <Link to={routes.home}>Trang chủ&nbsp;</Link>
@@ -161,7 +181,6 @@ function AddressSaved() {
                                 </div>
                             </div>
                             <div className={cx('profile__detail--infor')}>
-                                {/* setShowForm(!showForm) */}
                                 <Button className={cx('btn-add')} onClick={() => setVisitableAdd(true)} primary leftIcon={<FontAwesomeIcon icon={faHome} />} >Thêm địa chỉ</Button>
                                 {userAddress !== null && userAddress.map((address, index) => (
                                     <div key={index} className={cx('profile__detail--address')}>
@@ -198,7 +217,8 @@ function AddressSaved() {
 
                     </div>
                 </div>
-            </div >
+            </div > */}
+
         </>
     );
 }

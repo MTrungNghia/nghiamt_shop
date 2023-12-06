@@ -140,8 +140,10 @@ function CheckOut() {
         console.log(cartDetail);
         formData.append("cart", cartDetail.cart.id);
         formData.append("user_address", currentAddress.id);
-        if (discountCode !== null)
+        if (discountCode !== null && discountCode !== '') {
+            console.log(discountCode);
             formData.append("discount_code", discountCode.id);
+        }
         else
             formData.append("discount_code", discountCode);
         formData.append("total_price", totalAllPrice);
@@ -204,7 +206,7 @@ function CheckOut() {
                 // Xử lý dữ liệu khi nhận phản hồi thành công
                 console.log(response.data);
                 setDiscountAmounte(response.data.discount);
-                setDiscountCode(response.data);
+                // setDiscountCode(response.data);
                 setLoadBack(!loadBack);
             })
             .catch(error => {
@@ -298,7 +300,7 @@ function CheckOut() {
                                     <div className={cx('infor-ship--checkout__main')}>
                                         <div className={cx('checkout__main')}>
                                             <input type="checkbox" onChange={handleInputChange} />
-                                            <label>Giao hàng tận nơi</label>
+                                            <label>Thanh toán khi nhận hàng</label>
                                         </div>
                                         <FontAwesomeIcon icon={faMoneyBill} />
                                     </div>

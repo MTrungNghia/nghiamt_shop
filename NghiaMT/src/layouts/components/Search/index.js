@@ -11,6 +11,10 @@ const cx = classNames.bind(styles);
 
 function Search() {
     const [textSearch, setTextSearch] = useState("");
+    let [textSearch1, setTextSearch1] = useState(0);
+    console.log(textSearch1);
+    textSearch1 = 1;
+    console.log(textSearch1);
     const navigate = useNavigate();
 
     function handleSubmitSearch() {

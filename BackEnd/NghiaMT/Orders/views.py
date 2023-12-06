@@ -49,12 +49,13 @@ def create_order_item(pro, order, quantity, price):
 @api_view(['POST'])
 def OrderCreate(request):
     data = request.data
+    print(data)
     productList = request.data.getlist('product')
     pro_quantity = request.data.getlist('pro_quantity')
     price = request.data.getlist('price')
     user_address = UserAddress.objects.get(id=data['user_address'])
     user = User.objects.get(id=data['user'])
-    if(data['discount_code'] != 'null'):
+    if(data['discount_code'] != 'null' and data['discount_code'] != ''):
         discount_code = DiscountCode.objects.get(id=data['discount_code'])
     else:
         discount_code = None

@@ -4,8 +4,9 @@ import Button from "~/components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import routes from "~/config/routes";
 import images from "~/assets/images";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { notification } from 'antd';
 
 const cx = classNames.bind(styles);
@@ -17,6 +18,7 @@ function Register() {
     const [password, setPassword] = useState("");
     let navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
+    const auth = useSelector(state => state.auth.value);
 
     const openNotificationWithIcon = (type, message, description) => {
         api[type]({
@@ -24,6 +26,13 @@ function Register() {
             description: description,
         });
     };
+
+    useEffect(() => {
+        console.log(auth);
+        if (auth) {
+            navigate(routes.home);
+        }
+    }, []);
 
     function handleRegister(e) {
         e.preventDefault();

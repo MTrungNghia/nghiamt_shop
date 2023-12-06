@@ -14,6 +14,7 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
     const [district, setDistrict] = useState('');
     const [address, setAddress] = useState('');
     const [addressDefault, setAddressDefault] = useState(false);
+    const [changeAddressDefault, setChangeAddressDefault] = useState(false);
 
     const [api, contextHolder] = notification.useNotification();
 
@@ -57,6 +58,7 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
         setDivision(data.wards);
         setDistrict(data.district);
         setAddressDefault(data.is_default);
+        setChangeAddressDefault(data.is_default);
     }, [data]);
 
     return (
@@ -152,7 +154,7 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
                             </div>
                         </div >
                         <div className={cx('form-group-default')}>
-                            < input type="checkbox" id="addressDefault" disabled={addressDefault} name="addressDefault" checked={addressDefault} onChange={(e) => setAddressDefault(e.target.checked)} className={cx('checkbox-input')} />
+                            < input type="checkbox" id="addressDefault" disabled={changeAddressDefault} name="addressDefault" checked={addressDefault} onChange={(e) => setAddressDefault(e.target.checked)} className={cx('checkbox-input')} />
                             <label htmlFor="addressDefault" className={cx('checkbox-label')}>Đặt địa chỉ làm mặc định</label>
                         </div >
                     </form >

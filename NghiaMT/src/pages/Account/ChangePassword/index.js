@@ -11,6 +11,7 @@ import Button from "~/components/Button";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
 import { notification } from "antd";
+import RightNavbar from "../components/RightNavbar";
 
 const cx = classNames.bind(styles);
 
@@ -113,6 +114,7 @@ function ChangePassword() {
                     })
                     .catch(function (error) {
                         // Xử lý lỗi (nếu có)
+                        openNotificationWithIcon('error', 'Thay đổi mật khẩu', error.response.data.error);
                         console.log(error.response.data.error);
                     });
             }
@@ -132,7 +134,50 @@ function ChangePassword() {
     return (
         <>
             {contextHolder}
-            <div className={cx('wrapper')}>
+            <RightNavbar>
+                <div className={cx('profile__detail--infor')}>
+                    <h3>Thông tin tài khoản</h3>
+                    {notiWrongPass && (
+                        <div className={cx('noti')}>
+                            <span>Mật khẩu sai, nhập lại.</span>
+                        </div>
+                    )}
+                    {notiShortPass && (
+                        <div className={cx('noti')}>
+                            <span>Mật khẩu phải từ 6 ký tự trở lên.</span>
+                        </div>
+                    )}
+                    {notiDiffPass && (
+                        <div className={cx('noti')}>
+                            <span>Mật khẩu thay đổi cần phải giống nhau.</span>
+                        </div>
+                    )}
+
+                    <span>Để đảm bảo tính bảo mật vui lòng đặt mật khẩu với ít nhất 8 kí tự</span>
+                    <form onSubmit={handleSubmit} className={cx('from__change-password')}>
+                        <div className={cx('input__group')}>
+                            <span>Mật khẩu cũ *:</span>
+                            <input type="password" value={password} name="password"
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                        </div>
+                        <div className={cx('input__group')}>
+                            <span>Mật khẩu mới *:</span>
+                            <input type="password" name="new_password" value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)} />
+                        </div>
+                        <div className={cx('input__group')}>
+                            <span>Xác nhận lại mật khẩu *:</span>
+                            <input type="password" name="confirm_password" value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)} />
+                        </div>
+                        <div>
+                            <Button type="submit" className={cx('btn-add')} primary >Thay đổi mật khẩu</Button>
+                        </div>
+                    </form>
+                </div>
+            </RightNavbar>
+            {/* <div className={cx('wrapper')}>
                 <div className={cx('inner')}>
                     <div className={cx('breadcrumb')}>
                         <Link to={routes.home}>Trang chủ&nbsp;</Link>
@@ -218,7 +263,7 @@ function ChangePassword() {
 
                     </div>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 }
