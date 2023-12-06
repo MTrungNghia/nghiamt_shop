@@ -57,7 +57,7 @@ function Detail({ data }) {
             dataIndex: 'quantity',
         },
         {
-            title: 'Giá',
+            title: 'Tổng',
             dataIndex: 'price',
             render: (text, data) => (
                 <p>{Number(data.price * data.quantity).toLocaleString()}₫</p>
@@ -77,6 +77,7 @@ function Detail({ data }) {
                         <h3>Thông tin khách hàng:</h3>
                         <p>Tên khách hàng: {order?.name}</p>
                         <p>Địa chỉ: {order?.address}</p>
+                        <p>Số điện thoại: {order?.phone_number}</p>
                     </div>
                     <div style={{ marginBottom: '10px' }}>
                         {products != null && (

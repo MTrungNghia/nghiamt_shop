@@ -250,3 +250,39 @@
     }
 
 }
+
+.btn-add {
+    transition: background-color 0.3s;
+}
+.btn-add:hover {
+    background-color: var(--yellow);
+}
+.profile__detail--address {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding: 0px 16px;
+    .address__detail {
+        width: 90%;
+        display: flex;
+        flex-direction: column;
+        span {
+            font-weight: 300;
+        }
+        span b{
+            font-weight: 600;
+        }
+        .address__default {
+            color: var(--green);
+            font-weight: 500;
+        }
+    }
+    .profile__detail--btn {
+        width: 10%;
+        
+    }
+}
+.profile__detail--address + .profile__detail--address {
+    padding-top: 20px;
+    border-top: 1px solid #ccc;
+}

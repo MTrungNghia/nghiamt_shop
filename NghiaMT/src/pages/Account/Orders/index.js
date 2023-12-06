@@ -17,6 +17,7 @@ import images from '~/assets/images';
 import Detail from './Detail';
 import Button from '~/components/Button';
 import CustomButton from '~/components/Antd/Button';
+import RightNavbar from '../components/RightNavbar';
 
 const cx = classNames.bind(styles);
 
@@ -292,32 +293,34 @@ const Orders = () => {
                 </Modal>
             )}
 
-            <div className={cx('inner')} style={{ padding: '0 6px' }}>
-                <div className={cx('category_manager_title')}>
-                    <Title level={3}>Thông tin danh sách đơn hàng của bạn:</Title>
-                </div>
-                <div className={cx('category_manager_button')}>
-                    <CustomButton
-                        type="primary"
-                        shape="circle"
-                        icon={<ReloadOutlined className="reload-icon" />}
-                        onClick={handleReload}
-                        className={cx('custom_reload_button')}
+            <RightNavbar>
+                <div className={cx('inner')} style={{ padding: '0 6px' }}>
+                    <div className={cx('category_manager_title')}>
+                        <Title level={3}>Thông tin danh sách đơn hàng của bạn:</Title>
+                    </div>
+                    <div className={cx('category_manager_button')}>
+                        <CustomButton
+                            type="primary"
+                            shape="circle"
+                            icon={<ReloadOutlined className="reload-icon" />}
+                            onClick={handleReload}
+                            className={cx('custom_reload_button')}
+                        />
+                    </div>
+                    <Table
+                        style={{ marginTop: '10px' }}
+                        columns={columns}
+                        dataSource={listOrders}
+                        loading={reload}
+                        pagination={{
+                            position: ['bottomRight'],
+                            // Custom CSS class for pagination
+                            className: "custom-pagination"
+                        }}
                     />
-                </div>
-                <Table
-                    style={{ marginTop: '10px' }}
-                    columns={columns}
-                    dataSource={listOrders}
-                    loading={reload}
-                    pagination={{
-                        position: ['bottomRight'],
-                        // Custom CSS class for pagination
-                        className: "custom-pagination"
-                    }}
-                />
 
-            </div>
+                </div>
+            </RightNavbar>
         </div>
     );
 };

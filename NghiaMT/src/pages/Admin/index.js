@@ -35,9 +35,9 @@ function LayoutDefaultAdmin({ children }) {
                 <div className={cx('wrapper')}>
                     <div className={cx('inner')}>
                         <Row>
-                            <Col span={4}>
+                            {/* <Col span={4}>
                                 <Navbar />
-                            </Col>
+                            </Col> */}
                             <Col span={20}>
                                 {children}
                             </Col>

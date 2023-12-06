@@ -20,32 +20,32 @@ function Navbar({ color }) {
                 <span>Quản lý</span>
             </div>
             <hr />
-            <Menu theme="light" mode="inline">
-                <Menu.Item key="2" defaultChecked>
+            <Menu theme="light" mode="inline" defaultSelectedKeys={['1']}>
+                <Menu.Item key="1">
                     <NavLink to={routes.categoryManager}>
                         <FontAwesomeIcon className={cx("icon")} icon={faShop} />
                         <span className={cx("label")}>Loại sản phẩm</span>
                     </NavLink>
                 </Menu.Item>
-                <Menu.Item key="3">
+                <Menu.Item key="2">
                     <NavLink to={routes.productManager}>
                         <FontAwesomeIcon className={cx("icon")} icon={faTableCells} />
                         <span className={cx("label")}>Sản phẩm</span>
                     </NavLink>
                 </Menu.Item>
-                <Menu.Item key="4">
+                <Menu.Item key="3">
                     <NavLink to={routes.customerManager}>
                         <FontAwesomeIcon className={cx("icon")} icon={faChain} />
                         <span className={cx("label")}>Khách hàng</span>
                     </NavLink>
                 </Menu.Item>
-                <Menu.Item key="5">
+                <Menu.Item key="4">
                     <NavLink to={routes.orderManager}>
                         <FontAwesomeIcon className={cx("icon")} icon={faChain} />
                         <span className={cx("label")}>Đơn hàng</span>
                     </NavLink>
                 </Menu.Item>
-                <Menu.Item key="6">
+                <Menu.Item key="5">
                     <NavLink to={routes.statiscalReports}>
                         <FontAwesomeIcon className={cx("icon")} icon={faChain} />
                         <span className={cx("label")}>Thống kê</span>

@@ -15,12 +15,16 @@ import ChangePassword from "~/pages/Account/ChangePassword";
 import Orders from "~/pages/Account/Orders";
 import CheckOut from "~/pages/CheckOut";
 
-import CategoryManager from "~/pages/Admin/pages/CategoryManager";
-import ProductManager from "~/pages/Admin/pages/ProductManager";
-import StatiscalReports from "~/pages/Admin/pages/StatiscalReports";
-import CustomerManager from "~/pages/Admin/pages/CustomerManager";
-import OrderManager from "~/pages/Admin/pages/OrderManager";
 import SeacrhImage from "~/pages/Search/Image";
+import Promotion from "~/pages/Promotion";
+import News from "~/pages/New";
+import Contact from "~/pages/Contact";
+import InforAccount from "~/pages/Account";
+import CategoryManager from "~/pages/Account/Manager/Category";
+import ProductManager from "~/pages/Account/Manager/Product";
+import CustomerManager from "~/pages/Account/Manager/Customer";
+import StatiscalReports from "~/pages/Account/Manager/StatiscalReports";
+import OrderManager from "~/pages/Account/Manager/Order";
 
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
@@ -36,7 +40,11 @@ export const publicRoutes = [
 
     { path: config.routes.cateDetail, component: Category },
     { path: config.routes.introduce, component: Introduce },
+    { path: config.routes.promotion, component: Promotion },
+    { path: config.routes.new, component: News },
+    { path: config.routes.contact, component: Contact },
 
+    { path: config.routes.admin1, component: InforAccount },
     { path: config.routes.profile, component: Profile },
     { path: config.routes.addressSaved, component: AddressSaved },
     { path: config.routes.changePassword, component: ChangePassword },
@@ -46,13 +54,19 @@ export const publicRoutes = [
     { path: config.routes.register, component: Register, layout: null },
     { path: config.routes.forgotPassword, component: ForgotPassword, layout: null },
 
-];
-
-export const privateRoutes = [
     { path: config.routes.categoryManager, component: CategoryManager },
     { path: config.routes.productManager, component: ProductManager },
     { path: config.routes.customerManager, component: CustomerManager },
     { path: config.routes.orderManager, component: OrderManager },
     { path: config.routes.statiscalReports, component: StatiscalReports },
+
+];
+
+export const privateRoutes = [
+    // { path: config.routes.categoryManager, component: CategoryManager },
+    // { path: config.routes.productManager, component: ProductManager },
+    // { path: config.routes.customerManager, component: CustomerManager },
+    // { path: config.routes.orderManager, component: OrderManager },
+    // { path: config.routes.statiscalReports, component: StatiscalReports },
 
 ];

@@ -9,6 +9,9 @@ const routes = {
 
     cateDetail: 'category/:categoryName',
     introduce: '/introduce',
+    promotion: '/promotion',
+    new: '/news',
+    contact: '/contacts',
 
     login: '/login',
     register: '/register',
@@ -24,6 +27,13 @@ const routes = {
     customerManager: '/admin/customer',
     orderManager: '/admin/order',
     statiscalReports: '/admin/statistical_reports',
+
+    admin1: '/admin1',
+    categoryManager1: '/category',
+    productManager1: '/product',
+    customerManager1: '/customer',
+    orderManager1: '/order',
+    statiscalReports1: '/statistical_reports',
 }
 
 export default routes;

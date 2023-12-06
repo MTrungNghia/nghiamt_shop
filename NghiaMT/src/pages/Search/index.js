@@ -52,7 +52,6 @@ function Search() {
                     <Link to={routes.home}>Trang chủ&nbsp;</Link>
                     <span> / &nbsp; Tìm kiếm từ khóa: </span>
                     <span to={routes.home}>&nbsp;{searchName}&nbsp;</span>
-
                 </div>
                 <div className={cx('content')}>
                     <div className={cx('content-main')}>

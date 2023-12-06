@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
 import classNames from "classnames/bind";
 import images from "~/assets/images";
@@ -10,34 +10,60 @@ import routes from "~/config/routes";
 import { useState } from "react";
 import { ListCategory } from "./ListCategory";
 import { useSelector } from "react-redux";
+import { notification } from "antd";
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const [showUserOperations, setShowUserOperations] = useState(false);
     const auth = useSelector(state => state.auth.value);
+    console.log(auth);
+    const navigate = useNavigate();
 
     function ItemNavbar({
         item }) {
         return (<div className={cx('navbar__category')}>
-            <Link title={item.title} to={item.link} className={cx('navbar__category--title')}>
+            <Link title={item.title} to={`/category${item.link}`} className={cx('navbar__category--title')}>
                 <h5>{item.title}</h5>
             </Link>
             {item.itemsCategory && (
                 <div className={cx('navbar__category--items')}>
                     {item.itemsCategory.map((childItem, index) => (
-                        <Link title={childItem.title} to={childItem.link} key={index}>{childItem.title}</Link>
+                        <Link title={childItem.title} to={`/category/${childItem.link}`} key={index}>{childItem.title}</Link>
                     ))}
                 </div>
             )}
         </div>)
-    }
+    };
 
     function show() {
         setShowUserOperations(!showUserOperations);
-    }
+    };
+
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotificationWithIcon = (type, message, description) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
+
+    function hanldeCart() {
+        console.log(auth);
+        if (auth) {
+            navigate(routes.cart);
+        } else {
+            openNotificationWithIcon('warning', 'Thông báo', 'Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!');
+            setTimeout(() => {
+                navigate(routes.login);
+            }, 2000);
+        }
+    };
+
     return (
         <header className={cx('wrapper')}>
+            {contextHolder}
             <div className={cx('inner')}>
                 <Link to={routes.home} className={cx('logo')}>
                     <img src={images.logo} alt="logo" />
@@ -74,7 +100,7 @@ function Header() {
                                     </div>
                                 )}
                             </div>
-                            <Link to={(auth === false) ? routes.login : routes.cart} title="Giỏ hàng" className={cx('cart')}>
+                            <Link onClick={hanldeCart} to={(auth === false) ? routes.login : routes.cart} title="Giỏ hàng" className={cx('cart')}>
                                 <FontAwesomeIcon icon={faCartShopping} />
                                 <span>0</span>
                             </Link>
@@ -89,13 +115,13 @@ function Header() {
                                 <Link to={config.routes.introduce} title="Giới thiệu">Giới thiệu</Link>
                             </li>
                             <li>
-                                <Link title="Khuyến mãi hot">Khuyến mãi hot</Link>
+                                <Link to={config.routes.promotion} title="Khuyến mãi hot">Khuyến mãi hot</Link>
                             </li>
                             <li>
-                                <Link title="Tin tức">Tin tức</Link>
+                                <Link to={config.routes.new} title="Tin tức">Tin tức</Link>
                             </li>
                             <li>
-                                <Link title="Liên hệ">Liên hệ</Link>
+                                <Link to={config.routes.contact} title="Liên hệ">Liên hệ</Link>
                             </li>
                             <li
                                 className={cx('products__navbar')}

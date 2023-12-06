@@ -31,5 +31,9 @@ urlpatterns = [
     path('list_user_address/',
          views.GetAddressView.as_view(), name="GetAddressView"),
     path('create_address/', views.UserAddressAPI.as_view(), name="UserAddressAPI"),
+    path('create_user_address/', views.userAddressCreate, name="UserAddressCreateAPI"),
+    path('update_user_address/', views.userAddressUpdate, name="userAddressUpdateAPI"),
+    path('delete_user_address/<str:pk>/',
+         views.deleteUserAddress, name="deleteUserAddress"),
 
 ]

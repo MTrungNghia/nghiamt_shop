@@ -9,6 +9,7 @@ import {
     Typography,
     Image,
     Divider,
+    notification,
 } from "antd";
 import axios from 'axios';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -16,6 +17,10 @@ import classNames from "classnames/bind";
 import styles from "./CategoryManager.module.scss";
 import Button from '~/components/Button';
 import CustomButton from '~/components/Antd/Button';
+import AddCategory from './ActionModal/AddCategory';
+import EditCategory from './ActionModal/EditCatgory';
+import DeleteCategory from './ActionModal/DeleteCategory';
+import RightNavbar from '~/pages/Account/components/RightNavbar';
 
 const { Title } = Typography;
 const cx = classNames.bind(styles);
@@ -27,6 +32,8 @@ const CategoryManager = () => {
     const [confirmLoading, setConfirmLoading] = useState(false);
     const [visitableEdit, setVisitableEdit] = useState(false);
     const [selectCategory, setSelectCategory] = useState(null);
+    const [selectCategoryEdit, setSelectCategoryEdit] = useState(null);
+    const [selectCategoryDelete, setSelectCategoryDelete] = useState(null);
 
     const [editForm] = Form.useForm();
     const [Image1, setImage1] = useState(null);
@@ -89,7 +96,7 @@ const CategoryManager = () => {
     ];
 
     const handleEdit = (data) => {
-        setSelectCategory(data);
+        setSelectCategoryEdit(data);
         console.log(selectCategory);
         setCatergoryName(data.category_name);
         setCatergoryDes(data.description);
@@ -104,7 +111,7 @@ const CategoryManager = () => {
 
     const handleDelete = (data) => {
         console.log(data);
-        setSelectCategory(data);
+        setSelectCategoryDelete(data);
         setVisitableDelete(true);
     }
     useEffect(() => {
@@ -160,71 +167,18 @@ const CategoryManager = () => {
     const handleOk = () => {
         setConfirmLoading(true);
         if (visitableEdit) {
-            let formData = new FormData();
-            formData.append('category_name', categoryName);
-            formData.append('description', categoryDes);
-            formData.append('cate_image', Image1);
-
-            console.log(formData);
-            console.log(categoryName);
-            console.log(categoryDes);
-            console.log(Image1);
-            axios.post(`http://127.0.0.1:8000/category/update/${selectCategory.id}/`, formData)
-                .then(function (response) {
-                    // Xử lý phản hồi từ server (nếu cần)
-                    console.log(response.data);
-                    setReload(!reload);
-                    alert("thanhf coong");
-                    setVisitableEdit(false);
-                })
-                .catch(function (error) {
-                    // Xử lý lỗi (nếu có)
-                    console.error(error);
-                    alert("Loi");
-
-                });
-        }
-        if (visitableAdd) {
-            let formData = new FormData();
-            formData.append('category_name', categoryName);
-            formData.append('description', categoryDes);
-            formData.append('cate_image', Image1);
-
-            console.log(formData);
-            console.log(categoryName);
-            console.log(categoryDes);
-            console.log(Image1);
-            axios.post(`http://127.0.0.1:8000/category/create/`, formData)
-                .then(function (response) {
-                    // Xử lý phản hồi từ server (nếu cần)
-                    console.log(response.data);
-                    setReload(!reload);
-                    alert("add thanhf coong");
-                    setVisitableAdd(false);
-                })
-                .catch(function (error) {
-                    // Xử lý lỗi (nếu có)
-                    console.error(error);
-                    alert("Loi");
-
-                });
+            openNotificationWithIcon('success', 'Sửa thông tin loại sản phẩm', `Sửa thông tin sản phẩm thành công`);
+            setVisitableEdit(false);
         }
         if (visitableDelete) {
-            axios.delete(`http://127.0.0.1:8000/category/delete/${selectCategory.id}/`)
-                .then(function (response) {
-                    // Xử lý phản hồi từ server (nếu cần)
-                    console.log(response.data);
-                    setReload(!reload);
-                    alert("Xoas thanhf coong");
-                    setVisitableDelete(false);
-                })
-                .catch(function (error) {
-                    // Xử lý lỗi (nếu có)
-                    console.error(error);
-                    alert("Loi");
-
-                });
+            openNotificationWithIcon('success', 'Xóa loại sản phẩm', `Xóa loại sản phẩm thành công`);
+            setVisitableDelete(false);
         }
+        if (visitableAdd) {
+            openNotificationWithIcon('success', 'Thêm loại sản phẩm', `Thêm loại sản phẩm thành công`);
+            setVisitableAdd(false);
+        }
+        setReload(!reload);
         deleteAllField();
         setTimeout(() => {
             // setVisitableDelete(false);
@@ -260,92 +214,47 @@ const CategoryManager = () => {
 
     }
 
+    const [api, contextHolder] = notification.useNotification();
+
+    const openNotificationWithIcon = (type, message, description) => {
+        api[type]({
+            message: message,
+            description: description,
+        });
+    };
+
     return (
         <>
-
+            {contextHolder}
             {visitableAdd && (
-                <Modal
+                <AddCategory
                     title="Thêm loại sản phẩm"
                     open={visitableAdd}
                     onOk={handleOk}
-                    footer={
-                        (
-                            <>
-                                <Button effect onClick={handleCancel}>Hủy</Button>
-                                <Button primary effect onClick={handleOk}>Thêm loại sản phẩm</Button>
-                            </>
-
-                        )
-                    }
-                    okText="Thêm loại sản phẩm"
-                    cancelText="Hủy"
-                    confirmLoading={confirmLoading}
                     onCancel={handleCancel}
-                    width={'70%'}
-                >
-                    <div>
-                        <Form
-                            form={editForm}
-                            labelCol={{ span: 4 }}
-                            wrapperCol={{ span: 14 }}
-                            layout="horizontal"
-                            style={{ maxWidth: '100%' }}
-                        >
-                            <Divider />
-                            <Form.Item name='nameEdit' label="Tên loại sản phẩm">
-                                <Input value={categoryName} onChange={handleChangeNameedit} />
-                            </Form.Item>
-                            <Form.Item name='descriptionEdit' label="Mô tả">
-                                <TextArea value={categoryDes} onChange={(e) => setCatergoryDes(e.target.value)} rows={4} />
-                            </Form.Item>
-                            <Form.Item name="imageEdit" label="Hình ảnh" >
-                                {Image1 !== null && (
-                                    <Image
-                                        width={200}
-                                        style={{ marginBottom: '10px' }}
-                                        src={`http://localhost:8000${Image1}`}
-                                    />
-                                )}
-                                <input type="file" onChange={(e) => handleImageChange(e, setImage1, setselectImagen1)} />
-                            </Form.Item>
-                        </Form>
-                    </div>
-                </Modal>
+                />
             )}
 
             {visitableDelete && (
-                <Modal
-                    title={`Xóa loại sản phẩm ${selectCategory.category_name}`}
+                <DeleteCategory
+                    title={`Xóa loại sản phẩm`}
                     open={visitableDelete}
                     onOk={handleOk}
-                    confirmLoading={confirmLoading}
                     onCancel={handleCancel}
-                >
-                    <p>{'Bạn có thực sự muốn xóa loại sản phẩm này không?'}</p>
-                </Modal>
+                    data={selectCategoryDelete}
+                />
             )}
 
             {visitableEdit && (
-                <Modal
+                <EditCategory
                     title="Sửa loại sản phẩm"
                     open={visitableEdit}
                     onOk={handleOk}
-                    footer={
-                        (
-                            <>
-                                <Button effect onClick={handleCancel}>Hủy</Button>
-                                <Button primary effect onClick={handleOk}>Lưu loại sản phẩm</Button>
-                            </>
-
-                        )
-                    }
-                    okText="Lưu loại sản phẩm"
-                    cancelText="Hủy"
-                    confirmLoading={confirmLoading}
                     onCancel={handleCancel}
-                    width={'70%'}
-                >
-                    <div>
+                    data={selectCategoryEdit}
+                />
+            )}
+            {/* <div>
                         <Divider />
                         <Form
                             form={editForm}
@@ -371,25 +280,28 @@ const CategoryManager = () => {
                             </Form.Item>
                         </Form>
                     </div>
-                </Modal>
-            )}
+                </Modal> */}
+            <RightNavbar>
+                <>
+                    <div style={{ padding: '0 6px' }}>
+                        <div className={cx('category_manager_title')}>
+                            <Title level={3}>Thông tin loại sản phẩm của cửa hàng:</Title>
+                        </div>
+                        <div className={cx('category_manager_button')}>
+                            <CustomButton
+                                type="primary"
+                                shape="circle"
+                                icon={<ReloadOutlined className="reload-icon" />}
+                                // onClick={handleReload}
+                                className={cx('custom_reload_button')}
+                            />
+                            <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm loại sản phẩm</Button>
+                        </div>
+                        <Table style={{ marginTop: '10px' }} columns={columns} dataSource={listCategory} pagination={{ position: ['buttomRight'] }} />
+                    </div>
+                </>
+            </RightNavbar>
 
-            <div style={{ padding: '0 6px' }}>
-                <div className={cx('category_manager_title')}>
-                    <Title level={3}>Thông tin loại sản phẩm của cửa hàng:</Title>
-                </div>
-                <div className={cx('category_manager_button')}>
-                    <CustomButton
-                        type="primary"
-                        shape="circle"
-                        icon={<ReloadOutlined className="reload-icon" />}
-                        // onClick={handleReload}
-                        className={cx('custom_reload_button')}
-                    />
-                    <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm loại sản phẩm</Button>
-                </div>
-                <Table style={{ marginTop: '10px' }} columns={columns} dataSource={listCategory} pagination={{ position: ['buttomRight'] }} />
-            </div>
         </>
     );
 };

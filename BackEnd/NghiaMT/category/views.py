@@ -129,12 +129,14 @@ def CategoryCreate(request):
 @api_view(['POST'])
 def CategoryUpdate(request, pk):
     data=request.data
+    print(request.data)
     category = Category.objects.get(id=pk)
     category.category_name = data['category_name']
     category.description = data['description']
-    category.cate_image = data['cate_image']
+    if(data['cate_image']):
+        category.cate_image = data['cate_image']
+    print(data['cate_image'])
     category.save()
-    print(request.data)
     serializer = CategoryUpdateSerializers(data=category)
     serializer.is_valid()
         # serializer.save()

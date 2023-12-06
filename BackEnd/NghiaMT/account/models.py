@@ -1,8 +1,15 @@
 from django.db import models
-
+import uuid
+from django.utils import timezone
 from django.contrib.auth.models import AbstractUser, UserManager
 # Create your models here.
 
+def generate_filename(instance, filename):
+    # Tạo tên tệp duy nhất bằng cách sử dụng uuid4
+    unique_filename = f"{uuid.uuid4().hex}_{timezone.now().strftime('%Y%m%d%H%M%S')}"
+
+    # Trả về đường dẫn tệp mới
+    return f"photo/account/{unique_filename}.png"
 
 class CustomUserManager(UserManager):
     def _create_user(self, email, password, **extra_fields):
@@ -41,6 +48,7 @@ class User (AbstractUser):
     email = models.CharField(max_length=255, unique=True)
     password = models.CharField(max_length=255)
     is_admin = models.BooleanField(default=False)
+    avatar = models.ImageField(upload_to=generate_filename, null=True, blank=True)
 
     username = None
 

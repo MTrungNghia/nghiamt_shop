@@ -49,12 +49,13 @@ def create_order_item(pro, order, quantity, price):
 @api_view(['POST'])
 def OrderCreate(request):
     data = request.data
+    print(data)
     productList = request.data.getlist('product')
     pro_quantity = request.data.getlist('pro_quantity')
     price = request.data.getlist('price')
     user_address = UserAddress.objects.get(id=data['user_address'])
     user = User.objects.get(id=data['user'])
-    if(data['discount_code'] != 'null'):
+    if(data['discount_code'] != 'null' and data['discount_code'] != ''):
         discount_code = DiscountCode.objects.get(id=data['discount_code'])
     else:
         discount_code = None
@@ -123,6 +124,7 @@ def GetDetailOrderByUser(request, id):
         'name': user_address.full_name,
         'address': user_address.address,
         'quantity': order_data['quantity'],
+        'phone_number': user_address.phone_number,
         # 'discount_code': order['discount_code'],
         'order_status': order_data['order_status'],
         'payment_method': order_data['payment_method'],
@@ -139,7 +141,7 @@ def GetDetailOrderByUser(request, id):
 
 @api_view(['GET'])
 def GetListOrder(request):
-    orders = Order.objects.all()
+    orders = Order.objects.all().order_by('-id')
     serializer = OrderSerializers(orders, many=True)
 
     order_list = []

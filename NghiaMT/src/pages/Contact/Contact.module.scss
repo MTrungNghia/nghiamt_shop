@@ -1,0 +1,47 @@
+.wrapper {
+    background-color: var(--silver);
+  }
+  
+  .inner {
+    width: 88%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      background-color: var(--white);
+      border-radius: 8px;
+      width: 100%;
+      min-height: 45px;
+      padding: 0 8px;
+      a,
+      span {
+        font-weight: 300;
+        font-size: 1.7rem;
+      }
+      a:hover {
+        color: var(--primary);
+        transition: color 0.3s;
+      }
+    }
+    .content {
+        background-color: var(--white);
+        border-radius: 8px;
+        width: 100%;
+        padding: 8px 12px;
+        margin-top: 20px;
+        .title {
+            font-size: 2.6rem;
+            font-weight: 500;
+            display: flex;
+            color: var(--primary);
+            width: 100%;
+        }
+        .content-main {
+            width: 100%;
+        }
+    }
+}
