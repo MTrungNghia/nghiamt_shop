@@ -19,7 +19,6 @@ function App() {
         },
       }}
     >
-
       <Router>
         <ScrollToTop />
         <div className="App">

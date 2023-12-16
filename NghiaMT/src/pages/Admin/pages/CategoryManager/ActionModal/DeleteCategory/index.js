@@ -24,7 +24,6 @@ function DeleteCategory({ onOk, onCancel, title, open, data }) {
                 // Xử lý lỗi (nếu có)
                 console.error(error);
                 alert("Lỗi xóa loại sản phẩm");
-
             });
     };
 

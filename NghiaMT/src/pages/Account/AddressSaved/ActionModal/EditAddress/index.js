@@ -16,14 +16,6 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
     const [addressDefault, setAddressDefault] = useState(false);
     const [changeAddressDefault, setChangeAddressDefault] = useState(false);
 
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
     const handleSubmit = () => {
         let formData = new FormData();
         formData.append('id', data.id);
@@ -38,13 +30,13 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
 
         axios.post('account/update_user_address/', formData)
             .then(function (response) {
-                openNotificationWithIcon('success', 'Sửa địa chỉ', `Bạn đã sửa địa chỉ mới thành công.`);
+                notification.success({ message: 'Sửa địa chỉ', description: `Bạn đã sửa địa chỉ mới thành công.` });
                 setTimeout(() => {
                     onOk();
                 }, 2000);
             })
             .catch(function (error) {
-                openNotificationWithIcon('error', 'Sửa địa chỉ', `Lỗi sửa địa chỉ hãy kiểm tra lại.`);
+                notification.error({ message: 'Sửa địa chỉ', description: `Lỗi sửa địa chỉ hãy kiểm tra lại.` });
                 // Xử lý lỗi (nếu có)
                 console.error(error);
             });
@@ -63,8 +55,6 @@ function EditAddress({ onOk, onCancel, title, open, data, userId }) {
 
     return (
         <>
-            {contextHolder}
-
             <Modal
                 title={title}
                 open={open}

@@ -1,0 +1,28 @@
+.wrapper {
+    background-color: var(--silver);
+}
+
+.inner {
+    width: 88%;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    height: 300px;
+    background-color: var(--white);
+    align-items: center;
+    text-align: center;
+    .thanks_main {
+        width: 100%;
+        flex-direction: column;
+        h4{
+            font-size: 3.5rem;
+            font-weight: 700;
+            font-family: Blippo, fantasy;
+        }
+        p{
+            margin-bottom: 4px;
+        }
+    }
+}

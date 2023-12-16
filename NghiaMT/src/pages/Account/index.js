@@ -5,7 +5,7 @@ import routes from "~/config/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchange, faLocation, faPowerOff, faUser, faUserGear } from "@fortawesome/free-solid-svg-icons";
 import images from "~/assets/images";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
@@ -13,15 +13,13 @@ import AddressSaved from "./AddressSaved";
 import ChangePassword from "./ChangePassword";
 import Profile from "./Profile";
 import { Switch } from "antd";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
-
-
 function InforAccount() {
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { user, logout } = useContext(UserContext);
 
     const ROUTER_ACCOUNT_FUNCTION = [
         {
@@ -47,7 +45,6 @@ function InforAccount() {
     ];
 
 
-
     function ListLi({ onClick, to, icon, title }) {
         return (
             <a onClick={onClick} href={to}>
@@ -57,36 +54,21 @@ function InforAccount() {
         )
     };
 
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        axios.get('account/user/')
-            .then((res) => {
-                setUser(res.data);
-                dispatch(setAuth(true));
+    const handleLogout = async () => {
+        // localStorage.clear();
+        // setAuth(false);
+        // axios.defaults.headers.common['Authorization'] = null;
+        // axios.post("account/logout/")
+        //     .then((res) => {
+        //         console.log(res);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     })
+        await logout()
+            .then(() => {
+                navigate(routes.home);
             })
-            .catch(function (error) {
-                dispatch(setAuth(false));
-                if (error.response.status === 403) {
-                    navigate(routes.home);
-                }
-            });
-    }, [dispatch, navigate]);
-
-    function handleLogout() {
-        localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common['Authorization'] = null;
-        axios.post("account/logout/")
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-        navigate(routes.login);
     };
 
     return (
@@ -139,7 +121,7 @@ function InforAccount() {
                                                                 <ListLi to={routes.profile} icon={faUser} title={"Thông tin cá nhân"} />
                                                             </li>
                                                             <li>
-                                                                <ListLi to={routes.addressSaved} icon={faLocation} title={"Địa chỉ đã lưu (0)"} />
+                                                                <ListLi to={routes.addressSaved} icon={faLocation} title={`Địa chỉ đã lưu`} />
                                                             </li>
                                                             <li>
                                                                 <ListLi to={routes.changePassword} icon={faExchange} title={"Đổi mật khẩu"} />

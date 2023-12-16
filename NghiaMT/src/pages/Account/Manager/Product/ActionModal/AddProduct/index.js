@@ -3,7 +3,7 @@ import styles from "./AddProduct.module.scss";
 import { useEffect, useState } from "react";
 import Button from "~/components/Button";
 import axios from "axios";
-import { Divider, Modal, message, Upload } from "antd";
+import { Divider, Modal, message, Upload, notification } from "antd";
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 
 const cx = classNames.bind(styles);
@@ -102,12 +102,12 @@ function AddProduct({ okOk, onCancel, title, open }) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
                 onCancel();
-                alert("thanhf coong");
+                notification.success({ message: 'Thêm sản phẩm', description: 'Thêm sản phẩm thành công!' });
             })
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
                 console.error(error);
-                alert("Loi");
+                notification.error({ message: 'Thêm sản phẩm', description: 'Thêm sản phẩm thất bại!' });
             });
     };
 

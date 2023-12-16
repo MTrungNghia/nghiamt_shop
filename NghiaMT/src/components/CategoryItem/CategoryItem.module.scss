@@ -41,3 +41,23 @@
         transition: color 0.4s;
     }
 }
+
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+
+}
+
+@media (max-width: 895px) {
+  
+}
+
+@media (max-width: 426px) {
+    .wrapper {
+        // float: center;
+    }
+}

@@ -17,6 +17,57 @@ from store.serializers import ProductSerializer
 from .serializers import OrderSerializers, OrderItemSerializers, DiscountCodeSerializers
 import base64
 
+import json
+import urllib.request
+import urllib
+import uuid
+import time
+import requests
+import hmac
+import hashlib
+
+@api_view(['POST'])
+def paymentWithMomo(request):
+    print(request.data)
+    total = request.data['total_price']
+    endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
+    partnerCode = "MOMOBKUN20180529"
+    accessKey = "klm05TvNBzhg7h7j"
+    secretKey = "at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa"
+    orderInfo = "Thanh toan don hang NghiaMT Shop"
+    redirectUrl = "http://127.0.0.1:3000/thankyou" #result
+    ipnUrl = "http://127.0.0.1:3000/thankyou" #ma giao dịch kết quả
+    amount = str(total)
+    orderId = str(uuid.uuid4())
+    requestId = str(uuid.uuid4())
+    requestType = "captureWallet"
+    extraData = ""  # pass empty value or Encode base64 JsonString
+    # rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl+ "&requestId=" + requestId + "&requestType=" + requestType
+    rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType
+    h = hmac.new(bytes(secretKey, 'ascii'), bytes(rawSignature, 'ascii'), hashlib.sha256)
+    signature = h.hexdigest()
+    # json object send to MoMo endpoint
+
+    data = {
+        'partnerCode': partnerCode,
+        'partnerName': "Test",
+        'storeId': "Trung Nghia Store",
+        'requestId': requestId,
+        'amount': amount,
+        'orderId': orderId,
+        'orderInfo': orderInfo,
+        'redirectUrl': redirectUrl,
+        'ipnUrl': ipnUrl,
+        'lang': "en",
+        'extraData': extraData,
+        'requestType': requestType,
+        'signature': signature
+    }
+    data = json.dumps(data)
+
+    clen = len(data)
+    response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
+    return Response(response.json()['payUrl'])
 
 class DiscountCodeCreateAPIView(APIView):
     def get(self, request):
@@ -53,9 +104,12 @@ def OrderCreate(request):
     productList = request.data.getlist('product')
     pro_quantity = request.data.getlist('pro_quantity')
     price = request.data.getlist('price')
+    payment_method = data['payment_method']
+    print(payment_method)
     user_address = UserAddress.objects.get(id=data['user_address'])
     user = User.objects.get(id=data['user'])
-    if(data['discount_code'] != 'null' and data['discount_code'] != ''):
+    print(data['discount_code'])
+    if(data['discount_code'] != 'null' and data['discount_code'] != '' and data['discount_code'] != 'undefined'):
         discount_code = DiscountCode.objects.get(id=data['discount_code'])
     else:
         discount_code = None
@@ -65,25 +119,23 @@ def OrderCreate(request):
     else:
         note = None    
     order = Order(user_address = user_address,
-                  user=user,
-                  discount_code = discount_code,
-                  note = note,
-                  quantity = data['quantity'],
-                  total_price = data['total_price'],
+                user=user,
+                discount_code = discount_code,
+                note = note,
+                payment_method=payment_method,
+                quantity = data['quantity'],
+                total_price = data['total_price'],
     )
+
     cart_id = data['cart']
     cart = Cart.objects.get(id=cart_id)
-    print(order.quantity)
-    print(order.total_price)
     # serializer = OrderSerializers(data=o)
     if order:
         order.save()
         newOrder = order.id
-        print(newOrder)
         for i in range(len(productList)):
-            print(productList[i])
             create_order_item(productList[i], order, pro_quantity[i], price[i])
-        cart.delete()
+        # cart.delete()
 
         return Response(newOrder, status=201)
 
@@ -231,6 +283,15 @@ def StatiscalRevenue(request):
 def CancelOrder(request, id):
     order = Order.objects.get(id=id)
     order.order_status = 'CANCELLED'
+    order.save()
+
+    return Response('success', 200)
+
+@api_view(['POST'])
+def SuccessPaymentOrder(request, id):
+    order = Order.objects.get(id=id)
+    if(order.payment_method == 'MOMO'):
+        order.payment_status = 'SUCCESS'
     order.save()
 
     return Response('success', 200)

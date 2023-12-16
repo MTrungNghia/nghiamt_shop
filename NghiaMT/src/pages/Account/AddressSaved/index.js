@@ -5,7 +5,7 @@ import routes from "~/config/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchange, faHome, faLocation, faPenToSquare, faPowerOff, faRecycle, faUser, faUserGear } from "@fortawesome/free-solid-svg-icons";
 import images from "~/assets/images";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Button from "~/components/Button";
 import { useDispatch } from "react-redux";
@@ -14,11 +14,11 @@ import AddAddress from "./ActionModal/AddAddress";
 import EditAddress from "./ActionModal/EditAddress";
 import DeleteAddress from "./ActionModal/DeleteAddress";
 import RightNavbar from "../components/RightNavbar";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function AddressSaved() {
-    const [user, setUser] = useState(null);
     const [userAddress, setUserAddress] = useState(null);
     const [loadingApi, setLoadingApi] = useState(false);
     const [visitableAdd, setVisitableAdd] = useState(false);
@@ -28,25 +28,7 @@ function AddressSaved() {
     const [addressDelete, setAddressDelete] = useState(null);
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        axios.get('account/user/')
-            .then((res) => {
-                setUser(res.data);
-                dispatch(setAuth(true));
-            })
-            .catch(function (error) {
-                dispatch(setAuth(false));
-                if (error.response.status === 403) {
-                    navigate(routes.home);
-                }
-            });
-    }, [dispatch, navigate]);
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         if (user != null) {
@@ -67,20 +49,6 @@ function AddressSaved() {
                 <span>{title}</span>
             </a>
         )
-    }
-
-    function handleLogout() {
-        localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common['Authorization'] = null;
-        axios.post("account/logout/")
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-        navigate(routes.login);
     }
 
     const handleOk = () => {
@@ -149,8 +117,12 @@ function AddressSaved() {
                                 <span><b>Số điện thoại:</b> {address.phone_number}</span>
                             </div>
                             <div className={cx('profile__detail--btn')}>
-                                <button onClick={() => onClickEdit(address)}><FontAwesomeIcon icon={faPenToSquare} />Sửa</button>
-                                {!address.is_default && (<button onClick={() => onClickDelete(address)}><FontAwesomeIcon icon={faRecycle} /> Xóa</button>)}
+                                {/* <button onClick={() => onClickEdit(address)}><FontAwesomeIcon icon={faPenToSquare} />Sửa</button>
+                                {!address.is_default && (<button onClick={() => onClickDelete(address)}><FontAwesomeIcon icon={faRecycle} /> Xóa</button>)} */}
+                                <Button primary effect onClick={() => onClickEdit(address)} style={{ backgoundColor: '#77d2a1' }}>Sửa</Button>
+                                {!address.is_default && (
+                                    <Button effect onClick={() => onClickDelete(address)} style={{ marginLeft: '12px' }}>Xóa</Button>
+                                )}
                             </div>
                         </div>
                     ))}

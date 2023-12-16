@@ -4,10 +4,11 @@ import Button from "~/components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import routes from "~/config/routes";
 import images from "~/assets/images";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { notification } from 'antd';
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
@@ -19,6 +20,7 @@ function Register() {
     let navigate = useNavigate();
     const [api, contextHolder] = notification.useNotification();
     const auth = useSelector(state => state.auth.value);
+    const { user, register } = useContext(UserContext);
 
     const openNotificationWithIcon = (type, message, description) => {
         api[type]({
@@ -28,30 +30,36 @@ function Register() {
     };
 
     useEffect(() => {
-        console.log(auth);
-        if (auth) {
-            navigate(routes.home);
+        if (user !== null) {
+            setTimeout(() => {
+                navigate(routes.home);
+            }, 500);
         }
-    }, []);
+    }, [user]);
 
-    function handleRegister(e) {
+    const handleRegister = async (e) => {
         e.preventDefault();
-
-        axios.post("account/register/", {
-            first_name: firstName,
-            last_name: lastName,
+        const dataUser = {
+            firstName: firstName,
+            lastName: lastName,
             email: email,
-            password: password,
-        })
+            password: password
+        };
+
+        // axios.post("account/register/", {
+        //     first_name: firstName,
+        //     last_name: lastName,
+        //     email: email,
+        //     password: password,
+        // })
+        await register(dataUser)
             .then((response) => {
                 // Xử lý việc chuyển hướng sau khi đăng ký thành công
-                if (response.status === 200) {
-                    openNotificationWithIcon('success', 'Đăng ký thành công', `Đăng ký tài khoản thành công!`);
-                    // navigate('/login');
-                    setTimeout(() => {
-                        navigate(routes.login);
-                    }, 2000);
-                }
+                openNotificationWithIcon('success', 'Đăng ký thành công', `Đăng ký tài khoản thành công!`);
+                // navigate('/login');
+                setTimeout(() => {
+                    navigate(routes.login);
+                }, 2000);
             })
             .catch((error) => {
                 openNotificationWithIcon('error', 'Đăng ký lỗi', `Thông tin tài khoản đã tồn tại`);

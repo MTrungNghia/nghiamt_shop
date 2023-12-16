@@ -8,10 +8,11 @@ const cx = classNames.bind(styles);
 function ProductItem({
     product,
     colum4,
+    colum12,
     big,
     imageUrl = false
 }) {
-    const classes = cx('wrapper', { colum4, big });
+    const classes = cx('wrapper', { colum4, colum12, big });
     let price = 0;
     if (product.price) {
         price = Number(product.price).toLocaleString();

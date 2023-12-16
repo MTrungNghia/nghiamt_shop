@@ -11,6 +11,7 @@ import {
     Input,
     Typography,
     Image,
+    notification,
 } from "antd";
 import axios from 'axios';
 import images from '~/assets/images';
@@ -195,13 +196,13 @@ const OrderManager = () => {
                     // Xử lý phản hồi từ server (nếu cần)
                     console.log(response.data);
                     setReload(!reload);
-                    alert("Đơn hàng thành công!");
+                    notification.success({ message: 'Xác nhận đơn hàng', description: 'Đơn hàng thành công!' });
                     setVisitableDelete(false);
                 })
                 .catch(function (error) {
                     // Xử lý lỗi (nếu có)
                     console.error(error);
-                    alert("Loi");
+                    notification.error({ message: 'Xác nhận đơn hàng', description: 'Đơn hàng thất bại!' });
 
                 });
         }

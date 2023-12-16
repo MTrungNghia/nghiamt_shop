@@ -5,10 +5,11 @@ import CategoryItem from "~/components/CategoryItem";
 import CategoryList from "~/layouts/components/CategoryList";
 import Slider from "~/layouts/components/Slider";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles)
 function Home() {
@@ -17,21 +18,27 @@ function Home() {
     // const { userLogin } = useLocation().state;
     // const auth = useSelector(state => state.auth.value);
     const dispatch = useDispatch();
+    const { user } = useContext(UserContext);
 
     useEffect(() => {
         const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        axios.get('account/user/')
-            .then((res) => {
-                dispatch(setAuth(true));
-            })
-            .catch(function (error) {
-                console.log(error);
-                dispatch(setAuth(false));
+        // if (token) {
+        //     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        // }
+        // axios.get('account/user/')
+        //     .then((res) => {
+        //         dispatch(setAuth(true));
+        //     })
+        //     .catch(function (error) {
+        //         console.log(error);
+        //         dispatch(setAuth(false));
 
-            });
+        //     });
+        if (user) {
+            dispatch(setAuth(true));
+        } else {
+            dispatch(setAuth(false));
+        }
     }, []);
     useEffect(() => {
         axios.get("/category/list/")

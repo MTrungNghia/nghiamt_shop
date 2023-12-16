@@ -151,7 +151,6 @@ class RemoveCartItemAPI(APIView):
             return Response({'message': 'Product removed'})
         raise AuthenticationFailed('Unauthenticated!')
 
-
 def remove_cart(request, product_id):
     cart = Cart.objects.get(cart_id=_cart_id(request))
     product = get_object_or_404(Product, id=product_id)
@@ -162,6 +161,21 @@ def remove_cart(request, product_id):
     else:
         cart_item.delete()
     return redirect('cart')
+
+class DeleteCartAPI(APIView):
+    def delete(self, request):
+        auth = get_authorization_header(request).split()
+        if auth and len(auth) == 2:
+            token = auth[1].decode('utf-8')
+            id = decode_access_token(token)
+
+            user = User.objects.filter(pk=id).first()
+            cart = Cart.objects.get(user=user)
+            cart.delete()
+    # Trả về response dạng JSON
+            return Response({'message': 'Cart removed'})
+        raise AuthenticationFailed('Unauthenticated!')
+
 
 
 def remove_cart_item(request, product_id):

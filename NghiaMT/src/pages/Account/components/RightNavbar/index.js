@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import classNames from "classnames/bind";
 import styles from "./RightNavbar.module.scss";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -18,16 +18,16 @@ import images from "~/assets/images";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function RightNavbar({ children, index }) {
-    const [user, setUser] = useState(null);
     const [activeLink, setActiveLink] = useState(""); // Thêm state cho link đang được chọn
     const [isAdmin, setIsAdmin] = useState(false);
     const location = useLocation();
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+    const { user, logout, reloadUser } = useContext(UserContext);
 
     useEffect(() => {
         setActiveLink(location.pathname);
@@ -37,25 +37,6 @@ function RightNavbar({ children, index }) {
     useEffect(() => {
         setIsAdmin(user?.is_admin);
     }, [user]);
-
-    useEffect(() => {
-        const token = localStorage.getItem("authToken");
-        if (token) {
-            axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-        }
-        axios
-            .get("account/user/")
-            .then((res) => {
-                setUser(res.data);
-                dispatch(setAuth(true));
-            })
-            .catch(function (error) {
-                dispatch(setAuth(false));
-                if (error.response.status === 403) {
-                    navigate(routes.home);
-                }
-            });
-    }, [dispatch, navigate]);
 
     function ListLi({ onClick, to, icon, title }) {
         return (
@@ -70,19 +51,23 @@ function RightNavbar({ children, index }) {
         );
     };
 
-    function handleLogout() {
+    const handleLogout = async () => {
         localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common["Authorization"] = null;
-        axios
-            .post("account/logout/")
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
+        // setAuth(false);
+        // axios.defaults.headers.common["Authorization"] = null;
+        // axios
+        //     .post("account/logout/")
+        //     .then((res) => {
+        //         console.log(res);
+        //     })
+        //     .catch((error) => {
+        //         console.log(error);
+        //     });
+        await logout()
+            .then(() => {
+                reloadUser();
+                navigate(routes.home);
             });
-        navigate(routes.login);
     }
 
     return (
@@ -155,7 +140,7 @@ function RightNavbar({ children, index }) {
                                         <ListLi to={routes.profile} icon={faUser} title={"Thông tin cá nhân"} />
                                     </li>
                                     <li>
-                                        <ListLi to={routes.addressSaved} icon={faLocation} title={"Địa chỉ đã lưu (0)"} />
+                                        <ListLi to={routes.addressSaved} icon={faLocation} title={"Địa chỉ đã lưu"} />
                                     </li>
                                     <li>
                                         <ListLi to={routes.changePassword} icon={faExchange} title={"Đổi mật khẩu"} />

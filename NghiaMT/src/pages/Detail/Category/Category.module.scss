@@ -130,9 +130,7 @@
                 }
                 .product-pagination {
                     display: inline-block;
-                    position: absolute;
-                    bottom: 90px;
-
+                    margin-top: 20px;
                     button {
                         color: black;
                         float: left;
@@ -160,5 +158,35 @@
     h6{
         font-size: 1.7rem;
         font-weight: 500;
+    }
+}
+
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+
+}
+
+@media (max-width: 895px) {
+
+}
+
+@media (max-width: 426px) {
+    .fearured-category {
+        // max-height: 185px;
+        // overflow: hidden;
+        // overflow-x: scroll;
+        .fearured-category__list {
+            // display: inline-block!important;
+            // float: left;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
     }
 }

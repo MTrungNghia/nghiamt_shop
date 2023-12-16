@@ -3,7 +3,8 @@ const routes = {
     search: '/search/:searchName',
     searchImage: '/search_image',
     cart: '/cart',
-    checkout: 'checkout',
+    checkout: '/checkout',
+    thanksCheckout: '/thankyou',
 
     proDetail: '/:productName',
 

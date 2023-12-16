@@ -11,6 +11,7 @@ import {
     Input,
     Typography,
     Image,
+    notification,
 } from "antd";
 import axios from 'axios';
 import images from '~/assets/images';
@@ -55,7 +56,6 @@ const Orders = () => {
             filterSearch: true,
             onFilter: (value, record) => record.name.startsWith(value),
             render: (text, data) => {
-
                 return (
                     <>
                         <Avatar.Group>
@@ -74,18 +74,6 @@ const Orders = () => {
             }
         },
         {
-            title: 'Địa chỉ',
-            dataIndex: 'address',
-        },
-        {
-            title: 'Số lượng sản phầm',
-            dataIndex: 'quantity',
-        },
-        {
-            title: 'Trạng thái đơn hàng',
-            dataIndex: 'order_status',
-        },
-        {
             title: 'Phương thức thanh toán',
             dataIndex: 'payment_method',
         },
@@ -99,10 +87,6 @@ const Orders = () => {
         {
             title: 'Ngày đặt',
             dataIndex: 'date_added',
-        },
-        {
-            title: 'Chú thích',
-            dataIndex: 'note',
         },
         {
             title: 'Hoạt động',
@@ -207,14 +191,13 @@ const Orders = () => {
                     // Xử lý phản hồi từ server (nếu cần)
                     console.log(response.data);
                     setReload(true);
-                    alert("Hủy đơn hàng thành công!");
+                    notification.success({ message: 'Hủy đơn hàng', description: 'Hủy đơn hàng thành công!' });
                     setVisitableDelete(false);
                 })
                 .catch(function (error) {
                     // Xử lý lỗi (nếu có)
                     console.error(error);
-                    alert("Loi");
-
+                    notification.error({ message: 'Hủy đơn hàng', description: 'Hủy đơn hàng thất bại!' });
                 });
         }
         deleteAllField();

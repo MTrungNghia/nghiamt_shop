@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import classNames from "classnames/bind";
 import styles from "./Comments.module.scss";
 import Button from "~/components/Button";
-import { Avatar, List, Radio, Input, Space, Rate } from 'antd';
+import { Avatar, List, Radio, Input, Space, Rate, notification } from 'antd';
 import images from '~/assets/images';
 import axios from 'axios';
 
@@ -56,10 +56,12 @@ function Comments({ user_id, name, is_comment, slug, onOK }) {
             .then((res) => {
                 setData(res.data);
                 setReload(!reload);
+                notification.success({ message: 'Đánh giá sản phẩm', description: 'Cảm ơn bạn đã đưa ra đánh giá!' });
                 onOK();
                 setHiddenAddComment(false);
             })
             .catch((error) => {
+                notification.error({ message: 'Đánh giá sản phẩm', description: 'Lỗi! Hãy liên hệ với admin' });
                 console.log(error)
             })
     };

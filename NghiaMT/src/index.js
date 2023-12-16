@@ -7,13 +7,19 @@ import GlobalStyles from '~/components/GlobalStyles'
 import { Provider } from 'react-redux';
 import "../src/config/Interceptors";
 import store from './redux/store';
+import { CartProvider } from './context/cartContext';
+import { UserProvider } from './context/userContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
-    <GlobalStyles>
-      <App />
-    </GlobalStyles>
+    <UserProvider>
+      <GlobalStyles>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </GlobalStyles>
+    </UserProvider>
   </Provider>
 );
 

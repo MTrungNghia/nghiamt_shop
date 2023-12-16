@@ -9,6 +9,7 @@ import {
     Typography,
     Image,
     Divider,
+    notification,
 } from "antd";
 import axios from 'axios';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -57,12 +58,13 @@ function AddCategory({ onOk, onCancel, title, open }) {
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
+                notification.success({ message: 'Tạo loại sản phẩm', description: 'Tạo loại sản phẩm thành công!' });
                 onOk();
             })
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
                 console.error(error);
-                alert("Loi");
+                notification.error({ message: 'Tạo loại sản phẩm', description: 'Tạo loại sản phẩm thất bại!' });
 
             });
     };
