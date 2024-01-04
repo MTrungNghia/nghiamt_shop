@@ -140,9 +140,9 @@ function Header() {
                             <li>
                                 <Link to={config.routes.home} title="Trang chủ">Trang chủ</Link>
                             </li>
-                            <li>
+                            {/* <li>
                                 <Link to={config.routes.introduce} title="Giới thiệu">Giới thiệu</Link>
-                            </li>
+                            </li> */}
                             <li>
                                 <Link to={config.routes.promotion} title="Khuyến mãi hot">Khuyến mãi hot</Link>
                             </li>

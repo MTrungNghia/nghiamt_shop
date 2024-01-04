@@ -162,14 +162,6 @@ function Category() {
                     {category.products?.length !== 0 ? (<>
                         <div className={cx('product-sort')}>
                             <h6>Sắp xếp:</h6>
-                            {/* <ul className={cx('product-sort--list')}>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />A -&gt; Z</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Z -&gt; A</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Giá tăng dần</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Giá giảm dần</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng mới nhất</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng cũ nhất</li>
-                            </ul> */}
                             <ul className={cx('product-sort--list')}>
                                 <li>
                                     <input

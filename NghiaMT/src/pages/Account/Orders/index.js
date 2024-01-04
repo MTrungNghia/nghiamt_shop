@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { ReloadOutlined } from '@ant-design/icons';
 import classNames from "classnames/bind";
 import styles from "./Orders.module.scss";
@@ -19,6 +19,7 @@ import Detail from './Detail';
 import Button from '~/components/Button';
 import CustomButton from '~/components/Antd/Button';
 import RightNavbar from '../components/RightNavbar';
+import { UserContext } from '~/context/userContext';
 
 const cx = classNames.bind(styles);
 
@@ -40,9 +41,7 @@ const Orders = () => {
     const [selectImage1, setselectImagen1] = useState(null);
     const [reload, setReload] = useState(false);
 
-    const [visitableAdd, setVisitableAdd] = useState(false);
-
-    const { TextArea } = Input;
+    const { user } = useContext(UserContext);
 
     const onSelectChange = (newSelectedRowKeys) => {
         console.log('selectedRowKeys changed: ', newSelectedRowKeys);
@@ -132,7 +131,7 @@ const Orders = () => {
     useEffect(() => {
         // if (reload) {
         // setReload(true);
-        axios.get("/order/list-by-user/")
+        axios.get(`/order/list-by-user/${user?.id}/`)
             .then(function (res) {
                 setReload(false);
                 setListOrders(res.data);
@@ -141,7 +140,7 @@ const Orders = () => {
 
             })
         // }
-    }, [reload]);
+    }, [reload, user]);
 
     const rowSelection = {
         selectedRowKeys,
@@ -180,9 +179,7 @@ const Orders = () => {
         //     },
         // ],
     };
-    const handleAdd = () => {
-        setVisitableAdd(true);
-    }
+
     const handleOk = () => {
         setConfirmLoading(true);
         if (visitableDelete) {
@@ -217,7 +214,6 @@ const Orders = () => {
 
     const handleCancel = () => {
         setVisitableDelete(false);
-        setVisitableAdd(false);
         setVisitableEdit(false);
         deleteAllField();
     };

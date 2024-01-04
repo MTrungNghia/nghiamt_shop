@@ -9,7 +9,7 @@ import { useContext, useEffect, useState } from "react";
 // import Button from "~/components/Button";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { Button, Flex } from 'antd';
+import Button from '~/components/Button';
 import Cookies from 'js-cookie';
 import { CartContext } from "~/context/cartContext";
 
@@ -243,32 +243,40 @@ function Cart() {
                 <span>&nbsp;Giỏ hàng của bạn</span>
             </div>
             <div className={cx('content')}>
-                <table>
-                    <thead>
-                        <tr>
-                            <th colSpan={2}>Sản phẩm</th>
-                            <th>Đơn giá</th>
-                            <th>Số lượng</th>
-                            <th>Số tiền</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listProduct.map((item, index) => (
-                            <tr key={index}>
-                                <td colSpan={2}>
-                                    <ProductItem product={item} />
-                                </td>
-                                <td>
-                                    <span>{Number(item.price).toLocaleString()}</span>
-                                </td>
-                                <ProductQuantity product={item} />
+                {
+                    listProduct.length !== 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colSpan={2}>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Số tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {listProduct.map((item, index) => (
+                                    <tr key={index}>
+                                        <td colSpan={2}>
+                                            <ProductItem product={item} />
+                                        </td>
+                                        <td>
+                                            <span>{Number(item.price).toLocaleString()}</span>
+                                        </td>
+                                        <ProductQuantity product={item} />
 
-                            </tr>
-                        ))}
-                    </tbody>
-
-                </table>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className={cx('no_content')}>
+                            <span>Giỏ hàng trống. Chưa có sản phẩm nào được thêm!</span>
+                            <Button to={routes.home} primary effect={true} className={cx('btn-buy')}>Tiếp tục mua hàng</Button>
+                        </div>
+                    )
+                }
                 <div className={cx('cart-total')}>
                     <div className={cx('cart-total--title')}>
                         <span>Thông tin giỏ hàng</span>

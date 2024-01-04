@@ -72,26 +72,35 @@ function Detail({ data }) {
                     <Spin />
                 </div>
             ) : (
-                <div>
-                    <div>
-                        <h3>Thông tin khách hàng:</h3>
-                        <p>Tên khách hàng: {order?.name}</p>
-                        <p>Địa chỉ: {order?.address}</p>
-                        <p>Số điện thoại: {order?.phone_number}</p>
-                    </div>
+                <div className={cx('content-main')}>
                     <div style={{ marginBottom: '10px' }}>
                         {products != null && (
                             <>
-                                <h3>Product List</h3>
+                                <h3>Danh sách sản phẩm:</h3>
                                 <Table columns={columns} dataSource={products} pagination={{ position: ['topRight'] }} />
                             </>
                         )}
                     </div>
-                    <div>
-                        <h3>Thông tin đơn hàng:</h3>
-                        <p>Trạng thái: <Tag color="green">{order?.order_status}</Tag></p>
-                        <p>Phương thức thanh toán: {order?.payment_method}</p>
-                        <p>Thành tiền: {Number(order?.total_price).toLocaleString()} ₫</p>
+                    <div className={cx('detail-order')}>
+                        <div className={cx('detail-order__customer')}>
+                            <h3>Thông tin khách hàng:</h3>
+                            <p>Tên khách hàng: {order?.name}</p>
+                            <p>Địa chỉ: {order?.address}</p>
+                            <p>Số điện thoại: {order?.phone_number}</p>
+                        </div>
+                        <div className={cx('detail-order__infor')}>
+                            <h3>Thông tin đơn hàng:</h3>
+                            <p>Trạng thái: <Tag color="green">{order?.order_status}</Tag></p>
+                            <p>Phương thức thanh toán: {order?.payment_method}</p>
+                            <p>Trạng thái thanh toán: {order?.payment_status}</p>
+                            <p>Phí giao hàng: {Number(40000).toLocaleString()} ₫</p>
+                            {order?.discount_code !== null && (
+                                <p>Mã giảm giá: {Number(order?.discount_code).toLocaleString()} ₫</p>
+                            )}
+                        </div>
+                    </div>
+                    <div className={cx('total-order')}>
+                        <p>Tổng: {Number(order?.total_price).toLocaleString()} ₫</p>
                     </div>
                 </div>
             )}

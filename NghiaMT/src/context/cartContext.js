@@ -144,6 +144,7 @@ const CartProvider = ({ children }) => {
                     setLoading(!loading);
                 })
                 .catch(function (error) {
+                    notification.error({ message: 'Thêm sản phẩm', description: 'Hãy đăng nhập để thêm sản phẩm!' });
                     // notification.error({ message: 'Thêm sản phẩm', description: 'Thêm sản phẩm vào giỏ hàng thành công.' });
                     console.log(error);
                 });
@@ -180,13 +181,8 @@ const CartProvider = ({ children }) => {
     };
 
     const deleteCart = async () => {
-        const csrfToken = Cookies.get('csrftoken');
         try {
-            axios.delete(`cart/delete_cart/`, {
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                },
-            })
+            axios.delete(`cart/delete/${cart.cart.id}/`)
                 .then((response) => {
                     setLoading(!loading);
                 })

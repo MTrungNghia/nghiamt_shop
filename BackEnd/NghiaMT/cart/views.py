@@ -176,6 +176,12 @@ class DeleteCartAPI(APIView):
             return Response({'message': 'Cart removed'})
         raise AuthenticationFailed('Unauthenticated!')
 
+@api_view(['DELETE'])
+def CartDelete(request, pk):
+    cart = Cart.objects.get(id=pk)
+    cart.delete()
+
+    return Response("Cart succesfully delete")
 
 
 def remove_cart_item(request, product_id):

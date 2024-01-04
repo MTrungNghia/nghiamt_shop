@@ -8,8 +8,6 @@ const cx = classNames.bind(styles);
 function SeacrhImage() {
     const location = useLocation();
     const { productsSearch, url } = location.state || {};
-    console.log(productsSearch);
-    console.log(url);
     return (
         <div className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -20,8 +18,8 @@ function SeacrhImage() {
                 <div className={cx('content')}>
                     <div className={cx('content-main')}>
                         <h5>Kết quả tìm kiếm: </h5>
-                        <div className={cx('product-sort')}>
-                            <h6>Sắp xếp:</h6>
+                        {/* <div className={cx('product-sort')}>
+                            <h5>Sắp xếp:</h5>
                             <ul className={cx('product-sort--list')}>
                                 <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />A -&gt; Z</li>
                                 <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Z -&gt; A</li>
@@ -30,7 +28,7 @@ function SeacrhImage() {
                                 <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng mới nhất</li>
                                 <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng cũ nhất</li>
                             </ul>
-                        </div>
+                        </div> */}
                         <div className={cx('content-main__product')}>
                             <div className={cx('content-main__product--list')}>
                                 {productsSearch && productsSearch.map((product, index) => (

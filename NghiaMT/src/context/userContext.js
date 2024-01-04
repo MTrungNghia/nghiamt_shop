@@ -87,15 +87,14 @@ const UserProvider = ({ children }) => {
 
     const logout = async () => {
         try {
+            setUser(null);
             localStorage.clear();
             axios.defaults.headers.common['Authorization'] = null;
             axios.post("account/logout/")
                 .then((res) => {
                     console.log(res);
                     notification.info({ message: 'Đăng xuất', description: 'Đăng xuất tài khoản thành công!' });
-                    setTimeout(() => {
-                        setLoading(!loading);
-                    }, 500);
+                    setLoading(!loading);
                 })
                 .catch((error) => {
                     console.log(error);

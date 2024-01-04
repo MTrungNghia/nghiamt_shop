@@ -5,9 +5,10 @@ from .models import Order, OrderItem, DiscountCode
 class OrderSerializers(serializers.ModelSerializer):
     order_status = serializers.CharField(source='get_order_status_display')
     payment_method = serializers.CharField(source='get_payment_method_display')
+    payment_status = serializers.CharField(source='get_payment_status_display')
     class Meta:
         model = Order
-        fields = ['id','user_address', 'note', 'quantity', 'order_status','payment_method', 'total_price', 'date_added']
+        fields = ['id','user_address', 'note', 'quantity', 'order_status','payment_method', 'payment_status', 'total_price', 'date_added']
 
 class OrderSerializersAll(serializers.ModelSerializer):
     class Meta:

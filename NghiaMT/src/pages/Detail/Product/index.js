@@ -240,7 +240,7 @@ function Product() {
                                                         leftIcon={<FontAwesomeIcon icon={faCartShopping}
                                                         />}
                                                     >Thêm vào giỏ</Button>
-                                                    <Button effect={true} className={cx('btn-buy')}>Mua ngay</Button>
+                                                    <Button disabled className={cx('btn-buy')}>Mua ngay</Button>
                                                 </>
                                             ) : (
                                                 <>

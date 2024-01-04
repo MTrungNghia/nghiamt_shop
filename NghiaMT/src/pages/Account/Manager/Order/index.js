@@ -282,7 +282,7 @@ const OrderManager = () => {
                 </Modal>
             )}
             <RightNavbar>
-                <div className={cx('inner')} style={{ padding: '0 6px' }}>
+                <div style={{ padding: '0 6px' }}>
                     <div className={cx('category_manager_title')}>
                         <Title level={3}>Thông tin danh sách đơn hàng của bạn:</Title>
                     </div>

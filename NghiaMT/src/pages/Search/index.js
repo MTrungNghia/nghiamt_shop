@@ -16,9 +16,10 @@ function Search() {
     const [currentPager, setCurrentPager] = useState(1);
     const [previosPager, setPreviosPager] = useState(1);
     const [numberPager, setnumberPager] = useState(1);
+    const [selectedSortOption, setSelectedSortOption] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/product/search/${searchName}/?page=${currentPager}`)
+        axios.get(`http://127.0.0.1:8000/product/search/${searchName}/?page=${currentPager}&sort_option=${selectedSortOption}`)
             .then((res) => {
                 let data = res.data;
                 setListProduct(data.results);
@@ -27,7 +28,7 @@ function Search() {
             .catch((error) => {
                 console.log(error)
             })
-    }, [currentPager, searchName])
+    }, [currentPager, searchName, selectedSortOption])
 
     const handlePagination = (pageNumber) => () => {
         // Cập nhật currentPage
@@ -45,6 +46,10 @@ function Search() {
         }
     };
 
+    const handleSortOptionChange = (value) => {
+        setSelectedSortOption(value);
+    };
+
     return (
         <div className={cx('wrapper')}>
             <div className={cx('inner')}>
@@ -59,12 +64,72 @@ function Search() {
                         <div className={cx('product-sort')}>
                             <h6>Sắp xếp:</h6>
                             <ul className={cx('product-sort--list')}>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />A -&gt; Z</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Z -&gt; A</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Giá tăng dần</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Giá giảm dần</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng mới nhất</li>
-                                <li><input type="checkbox" id="vehicle1" name="vehicle1" value="Bike" />Hàng cũ nhất</li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption1"
+                                        name="sortOption"
+                                        value="A-Z"
+                                        checked={selectedSortOption === 'A-Z'}
+                                        onChange={() => handleSortOptionChange('A-Z')}
+                                    />
+                                    <label htmlFor="sortOption1">A -&gt; Z</label>
+                                </li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption2"
+                                        name="sortOption"
+                                        value="Z-A"
+                                        checked={selectedSortOption === 'Z-A'}
+                                        onChange={() => handleSortOptionChange('Z-A')}
+                                    />
+                                    <label htmlFor="sortOption2">Z -&gt; A</label>
+                                </li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption3"
+                                        name="sortOption"
+                                        value="PriceAsc"
+                                        checked={selectedSortOption === 'PriceAsc'}
+                                        onChange={() => handleSortOptionChange('PriceAsc')}
+                                    />
+                                    <label htmlFor="sortOption3">Giá tăng dần</label>
+                                </li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption4"
+                                        name="sortOption"
+                                        value="PriceDesc"
+                                        checked={selectedSortOption === 'PriceDesc'}
+                                        onChange={() => handleSortOptionChange('PriceDesc')}
+                                    />
+                                    <label htmlFor="sortOption4">Giá giảm dần</label>
+                                </li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption5"
+                                        name="sortOption"
+                                        value="Newest"
+                                        checked={selectedSortOption === 'Newest'}
+                                        onChange={() => handleSortOptionChange('Newest')}
+                                    />
+                                    <label htmlFor="sortOption5">Hàng mới nhất</label>
+                                </li>
+                                <li>
+                                    <input
+                                        type="radio"
+                                        id="sortOption6"
+                                        name="sortOption"
+                                        value="Oldest"
+                                        checked={selectedSortOption === 'Oldest'}
+                                        onChange={() => handleSortOptionChange('Oldest')}
+                                    />
+                                    <label htmlFor="sortOption6">Hàng cũ nhất</label>
+                                </li>
                             </ul>
                         </div>
                         <div className={cx('content-main__product')}>

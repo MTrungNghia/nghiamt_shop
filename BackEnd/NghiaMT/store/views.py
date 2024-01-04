@@ -48,14 +48,11 @@ def ProductCreate(request):
     data = request.data
     ImageList = request.data.getlist('ImageList')
     serializer = ProductSerializer(data=data)
-    # product = Product.objects.filter(product_name=data['product_name'])
     ImageList = list(filter(lambda x: x != 'null', ImageList))
 
     if serializer.is_valid():
         serializer.save()
         product = Product.objects.get(product_name=data['product_name'])
-        # proDerializer = ProductSerializers(product, many=False)
-        # pID = int(proDerializer.data['id'])
         for imageItem in ImageList:
             create_product(p_id=product, image_file=imageItem)
 
@@ -69,7 +66,7 @@ def ProductList(request):
     paginator = PageNumberPagination()
     paginator.page_size = 8  # Số lượng bản ghi trên mỗi trang
 
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('-id')
     paginated_products = paginator.paginate_queryset(products, request)
     serializer = ProductSerializers(products, many=True)
 
@@ -77,7 +74,7 @@ def ProductList(request):
 
 @api_view(['GET'])
 def ProductListAll(request):
-    products = Product.objects.all()
+    products = Product.objects.all().order_by('-id')
     serializer = ProductSerializers(products, many=True)
 
     return Response(serializer.data)
@@ -117,16 +114,44 @@ def ProductDetail(request, slug):
 
     return Response(pDetail)
 
+@api_view(['GET'])
+def ProductAllDetail(request, id):
+    product = Product.objects.filter(pk=id).first()
+    proDerializer = ProductSerializers(product, many=False)
+    pDetail = proDerializer.data
+    pDetail['category_id'] = product.category.id
+    # pDetail['category_name'] = product.category.category_name
+    # pDetail['category_slug'] = product.category.slug
+    proImgs = ProductImage.objects.filter(product=product)
+    imageDerializer = ProductImageSerializers(proImgs, many=True)
+    pDetail['images'] = imageDerializer.data
+
+    return Response(pDetail)
 
 @api_view(['GET'])
 def ProductSearch(request, text):
     paginator = CustomPagination()
     paginator.page_size = 16  # Số lượng bản ghi trên mỗi trang
     products = Product.objects.filter(product_name__icontains=text)
+    sort_option = request.query_params.get('sort_option')
+    if sort_option != 'null':
+        if sort_option == 'A-Z':
+            products = products.order_by('product_name')
+        elif sort_option == 'Z-A':
+            products = products.order_by('-product_name')
+        elif sort_option == 'PriceAsc':
+            products = products.order_by('price')
+        elif sort_option == 'PriceDesc':
+            products = products.order_by('-price')
+        elif sort_option == 'Newest':
+            products = products.order_by('-created_date')
+        elif sort_option == 'Oldest':
+            products = products.order_by('created_date')
+    
     paginated_products = paginator.paginate_queryset(products, request)
-    serializer = ProductSerializers(paginated_products, many=True)
+    proSerializer = ProductSerializers(paginated_products, many=True)
 
-    return paginator.get_paginated_response(serializer.data)
+    return paginator.get_paginated_response(proSerializer.data)
 
 @api_view(['GET'])
 def StatiscalProduct(request):
@@ -135,7 +160,6 @@ def StatiscalProduct(request):
     product_list = []
     sold_total = 0
     for productItem in serializer.data:
-
         sold_total += productItem['quantity_sold']
         
     data = {
@@ -145,14 +169,35 @@ def StatiscalProduct(request):
 
     return Response(data)
 
+# @api_view(['POST'])
+# def ProductUpdate(request, pk):
+#     product = Product.objects.get(id=pk)
+#     serializer = ProductSerializers(instance=product, data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#     print(serializer.data)
+#     return Response(serializer.data)
+
 @api_view(['POST'])
 def ProductUpdate(request, pk):
-    product = Product.objects.get(id=pk)
-    serializer = ProductSerializers(instance=product, data=request.data)
+    try:
+        product = Product.objects.get(id=pk)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=404)
+    data = request.data
+    ImageList = request.data.getlist('ImageList')
+    print(data)
+    serializer = ProductSerializer(instance=product, data=data)
+    ImageList = list(filter(lambda x: x != 'null', ImageList))
     if serializer.is_valid():
         serializer.save()
-    print(serializer.data)
-    return Response(serializer.data)
+        product = Product.objects.get(product_name=data['product_name'])
+        # for imageItem in ImageList:
+        #     create_product(p_id=product, image_file=imageItem)
+
+        return Response(serializer.data, status=201)
+
+    return Response(serializer.errors, status=400)
 
 
 @api_view(['DELETE'])

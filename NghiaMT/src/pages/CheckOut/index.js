@@ -67,6 +67,7 @@ function CheckOut() {
 
     const [quantity, setQuantity] = useState(0);
 
+    const [discountCodeInput, setDiscountCodeInput] = useState(null);
     const [discountCode, setDiscountCode] = useState(null);
     const [discountAmount, setDiscountAmounte] = useState(0);
     const [numberAddress, setNumberAddress] = useState(0);
@@ -83,7 +84,10 @@ function CheckOut() {
         setTotalPrice(totalPriceProducts);
         if (discountAmount !== 0 && discountAmount > totalPriceProducts + transportFee) {
             setTotalAllPrice(0);
-        } else {
+        } else if (discountAmount !== 0) {
+            setTotalAllPrice(totalPriceProducts - discountAmount + transportFee);
+        }
+        else {
             setTotalAllPrice(totalPriceProducts + transportFee);
         }
         console.log(listProduct);
@@ -222,17 +226,18 @@ function CheckOut() {
 
     const handleSaleCode = (e) => {
         e.preventDefault();
-        axios.get(`order/create-discount-code/?sale_code=${discountCode}`)
+        axios.get(`order/create-discount-code/?sale_code=${discountCodeInput}`)
             .then(response => {
                 // Xử lý dữ liệu khi nhận phản hồi thành công
                 console.log(response.data);
                 setDiscountAmounte(response.data.discount);
-                // setDiscountCode(response.data);
+                setDiscountCode(response.data);
                 setLoadBack(!loadBack);
             })
             .catch(error => {
                 // Xử lý lỗi khi có lỗi trong quá trình yêu cầu
-                console.error(error);
+                notification.error({ message: 'Mã giảm giá', description: error.response.data.error });
+                console.error(error.response.data.error);
             });
     }
 
@@ -358,14 +363,15 @@ function CheckOut() {
 
                             ))}
                         </div>
+
                         <div className={cx('infor-total--code-sale')}>
                             <div className={cx('form-group')}>
                                 <input type="name"
                                     name="sale-code"
                                     className={cx('form-control')}
                                     id="inputField"
-                                    value={discountCode}
-                                    onChange={(e) => setDiscountCode(e.target.value)}
+                                    value={discountCodeInput}
+                                    onChange={(e) => setDiscountCodeInput(e.target.value)}
                                 />
                                 <label for="inputField" className={cx('floating-label')}>Nhập mã giảm giá</label>
                                 <Button onClick={handleSaleCode} primary effect>Áp dụng</Button>
@@ -378,6 +384,7 @@ function CheckOut() {
                             )}
 
                         </div>
+
                         <div className={cx('infor-total--detail')}>
                             <div className={cx('infor-total--main-item')}>
                                 <label>Tạm tính</label>

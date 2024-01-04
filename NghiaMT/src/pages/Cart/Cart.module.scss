@@ -31,6 +31,14 @@
         display: flex;
         justify-content: space-between;
         margin-top: 20px;
+        .no_content {
+            width: 69%;
+            background-color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
         table {
             width: 69%;
             background-color: var(--white);

@@ -83,12 +83,7 @@ function Login() {
                 email: email,
                 password: password,
             };
-            await login(userData)
-                .then((rep) => {
-                    setTimeout(() => {
-                        navigate(routes.home);
-                    }, 2000);
-                })
+            await login(userData);
         } else {
             console.log('form is not valid')
         }
