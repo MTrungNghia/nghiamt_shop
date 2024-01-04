@@ -5,19 +5,17 @@ import routes from "~/config/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchange, faLocation, faPowerOff, faUser, faUserGear } from "@fortawesome/free-solid-svg-icons";
 import images from "~/assets/images";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import Button from "~/components/Button";
-import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
 import { notification } from "antd";
 import RightNavbar from "../components/RightNavbar";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function ChangePassword() {
-    const user_id = localStorage.getItem('user_id');
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
 
     const [password, setPassword] = useState('');
@@ -27,27 +25,7 @@ function ChangePassword() {
     const [notiWrongPass, setNotiWrongPass] = useState(false);
     const [notiShortPass, setNotiShortPass] = useState(false);
     const [notiDiffPass, setNotiDiffPass] = useState(false);
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        axios.get('account/user/')
-            .then((res) => {
-                setUser(res.data);
-                console.log(user);
-                dispatch(setAuth(true));
-            })
-            .catch(function (error) {
-                dispatch(setAuth(false));
-                if (error.response.status === 403) {
-                    navigate(routes.home);
-                }
-            });
-    }, [dispatch, navigate]);
+    const { user } = useContext(UserContext);
 
     function ListLi({ onClick, to, icon, title }) {
         return (
@@ -56,20 +34,6 @@ function ChangePassword() {
                 <span>{title}</span>
             </a>
         )
-    }
-
-    function handleLogout() {
-        localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common['Authorization'] = null;
-        axios.post("account/logout/")
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-        navigate(routes.login);
     }
 
     function reset() {
@@ -108,13 +72,13 @@ function ChangePassword() {
                             setNotiDiffPass(false);
                             setNotiShortPass(false);
                             reset();
-                            openNotificationWithIcon('success', 'Thay đổi mật khẩu', `Thay đổi mật khẩu thành công!`);
+                            notification.success({ message: 'Thay đổi mật khẩu', description: `Thay đổi mật khẩu thành công!` });
                             // a1234567
                         }
                     })
                     .catch(function (error) {
                         // Xử lý lỗi (nếu có)
-                        openNotificationWithIcon('error', 'Thay đổi mật khẩu', error.response.data.error);
+                        notification.success({ message: 'Thay đổi mật khẩu', description: error.response.data.error });
                         console.log(error.response.data.error);
                     });
             }
@@ -122,18 +86,8 @@ function ChangePassword() {
 
     }
 
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
-
     return (
         <>
-            {contextHolder}
             <RightNavbar>
                 <div className={cx('profile__detail--infor')}>
                     <h3>Thông tin tài khoản</h3>

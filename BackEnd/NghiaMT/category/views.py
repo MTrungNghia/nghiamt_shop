@@ -80,10 +80,41 @@ def ProductsByCategory(request, slug):
     paginator.page_size = 12
     category = Category.objects.get(slug=slug)
     products = Product.objects.filter(category=category).order_by('-created_date')
+    
+    price_option = request.query_params.get('price_option')
+    sort_option = request.query_params.get('sort_option')
+
+    if price_option != 'null':
+        if price_option == 'Below1M':
+            products = products.filter(price__lt=1000000)
+        elif price_option == '1Mto5M':
+            products = products.filter(price__range=(1000000, 5000000))
+        elif price_option == '5Mto10M':
+            products = products.filter(price__range=(5000000, 10000000))
+        elif price_option == '10Mto20M':
+            products = products.filter(price__range=(10000000, 20000000))
+        elif price_option == 'Above20M':
+            products = products.filter(price__gte=20000000)
+
+    if sort_option != 'null':
+        if sort_option == 'A-Z':
+            products = products.order_by('product_name')
+        elif sort_option == 'Z-A':
+            products = products.order_by('-product_name')
+        elif sort_option == 'PriceAsc':
+            products = products.order_by('price')
+        elif sort_option == 'PriceDesc':
+            products = products.order_by('-price')
+        elif sort_option == 'Newest':
+            products = products.order_by('-created_date')
+        elif sort_option == 'Oldest':
+            products = products.order_by('created_date')
+    
     paginated_products = paginator.paginate_queryset(products, request)
     proSerializer = ProductSerializers(paginated_products, many=True)
 
     return paginator.get_paginated_response(proSerializer.data)
+
 
 
 @api_view(['GET'])

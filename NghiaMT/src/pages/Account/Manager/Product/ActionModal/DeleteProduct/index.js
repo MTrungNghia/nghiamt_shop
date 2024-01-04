@@ -6,6 +6,7 @@ import {
     Input,
     Typography,
     Image,
+    notification,
 } from "antd";
 import axios from "axios";
 
@@ -17,13 +18,13 @@ function DeleteProduct({ okOk, onCancel, title, open, data }) {
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
+                notification.success({ message: 'Xóa sản phẩm', description: 'Xóa sản phẩm thành công' });
                 onCancel();
-                alert("Xoas thanhf coong");
             })
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
                 console.error(error);
-                alert("Loi");
+                notification.error({ message: 'Xóa sản phẩm', description: 'Xóa sản phẩm thất bại' });
 
             });
     };

@@ -27,6 +27,7 @@ class Order(models.Model):
         ('CREDIT_CARD', 'Thẻ tín dụng'),
         ('BANK_TRANSFER', 'Chuyển khoản ngân hàng'),
         ('COD', 'Thanh toán khi nhận hàng'),
+        ('MOMO', 'Thanh toán bằng Momo'),
     )
     id = models.AutoField(primary_key=True)
     user= models.ForeignKey(User, on_delete=models.CASCADE)
@@ -40,9 +41,8 @@ class Order(models.Model):
         max_length=20, choices=ORDER_STATUS_CHOICES, default='PENDING')
     payment_method = models.CharField(
         max_length=20, choices=PAYMENT_METHOD_CHOICES, default='COD')
+    payment_status = models.CharField(max_length=20, choices=[('PENDING', 'Đang chờ thanh toán'), ('SUCCESS', 'Thanh toán thành công'), ('FAILED', 'Thanh toán thất bại')], default='PENDING')
     total_price = models.IntegerField(default=0)
-
-
 
 class OrderItem(models.Model):
     id = models.AutoField(primary_key=True)

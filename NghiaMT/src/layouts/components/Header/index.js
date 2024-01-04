@@ -1,23 +1,31 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import styles from "./Header.module.scss";
 import classNames from "classnames/bind";
 import images from "~/assets/images";
 import Search from "../Search";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCartShopping, faCircleUser, faMapLocation, faPhoneVolume } from "@fortawesome/free-solid-svg-icons";
+import { faCaretDown, faCartShopping, faCircleUser, faHome, faMapLocation, faPhone, faPhoneVolume, faUser } from "@fortawesome/free-solid-svg-icons";
 import config from "~/config";
 import routes from "~/config/routes";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { ListCategory } from "./ListCategory";
-import { useSelector } from "react-redux";
 import { notification } from "antd";
+import { CartContext } from "~/context/cartContext";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function Header() {
     const [showUserOperations, setShowUserOperations] = useState(false);
-    const auth = useSelector(state => state.auth.value);
-    console.log(auth);
+    const location = useLocation();
+    const [activeLink, setActiveLink] = useState("");
+    const { listProduct } = useContext(CartContext);
+    const { user } = useContext(UserContext);
+
+    useEffect(() => {
+        setActiveLink(location.pathname);
+    }, [activeLink]);
+
     const navigate = useNavigate();
 
     function ItemNavbar({
@@ -36,6 +44,27 @@ function Header() {
         </div>)
     };
 
+    function ItemMobileNavbar({ icon, to, onClick, title, className }) {
+        const WrapperElement = to ? 'a' : 'button';
+
+        const handleClick = () => {
+            if (onClick) {
+                onClick();
+            }
+        };
+
+        return (
+            <WrapperElement
+                href={to}
+                onClick={handleClick}
+                className={cx({ active: to === activeLink })}
+            >
+                <FontAwesomeIcon icon={icon} />
+                <h5>{title}</h5>
+            </WrapperElement>
+        );
+    }
+
     function show() {
         setShowUserOperations(!showUserOperations);
     };
@@ -50,8 +79,8 @@ function Header() {
     };
 
     function hanldeCart() {
-        console.log(auth);
-        if (auth) {
+        console.log(user);
+        if (user !== null) {
             navigate(routes.cart);
         } else {
             openNotificationWithIcon('warning', 'Thông báo', 'Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!');
@@ -87,7 +116,7 @@ function Header() {
                                 {showUserOperations && (
                                     <div className={cx("user-operations")}>
                                         {
-                                            (auth === false) ?
+                                            (user === null) ?
                                                 (<ul>
                                                     <li><a href={routes.login}>Đăng nhập</a></li>
                                                     <li><a href={routes.register}>Đăng ký</a></li>
@@ -100,9 +129,9 @@ function Header() {
                                     </div>
                                 )}
                             </div>
-                            <Link onClick={hanldeCart} to={(auth === false) ? routes.login : routes.cart} title="Giỏ hàng" className={cx('cart')}>
+                            <Link onClick={hanldeCart} to={(user === null) ? routes.login : routes.cart} title="Giỏ hàng" className={cx('cart')}>
                                 <FontAwesomeIcon icon={faCartShopping} />
-                                <span>0</span>
+                                <span>{listProduct.length}</span>
                             </Link>
                         </div>
                     </div>
@@ -111,9 +140,9 @@ function Header() {
                             <li>
                                 <Link to={config.routes.home} title="Trang chủ">Trang chủ</Link>
                             </li>
-                            <li>
+                            {/* <li>
                                 <Link to={config.routes.introduce} title="Giới thiệu">Giới thiệu</Link>
-                            </li>
+                            </li> */}
                             <li>
                                 <Link to={config.routes.promotion} title="Khuyến mãi hot">Khuyến mãi hot</Link>
                             </li>
@@ -135,11 +164,17 @@ function Header() {
                                     ))}
                                 </div>
                             </li>
-
                         </div>
                     </ul>
                 </div>
-
+            </div>
+            <div className={cx('mobile_navbar')}>
+                <div className={cx('mobile_navbar--inner')}>
+                    <ItemMobileNavbar to={routes.home} title={"Trang chủ"} icon={faHome} />
+                    <ItemMobileNavbar to={routes.contact} title={"Liên hệ"} icon={faPhone} />
+                    <ItemMobileNavbar to={(user !== null) ? (routes.profile) : (routes.login)} title={"Tài khoản"} icon={faUser} />
+                    <ItemMobileNavbar to={routes.cart} title={"Giỏ hàng"} icon={faCartShopping} />
+                </div>
             </div>
         </header>
     );

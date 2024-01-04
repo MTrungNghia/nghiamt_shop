@@ -4,84 +4,93 @@ import Button from "~/components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import routes from "~/config/routes";
 import images from "~/assets/images";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import Cookies from 'js-cookie';
-import { useSelector } from "react-redux";
-import { setAuth } from "~/redux/slice/authSlide";
-import { Alert, notification } from 'antd';
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function Login() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const auth = useSelector(state => state.auth.value);
-    console.log(auth);
-    // const [userLogin, setUserLogin] = useState(null);
+    const { user, login } = useContext(UserContext);
     const navigate = useNavigate();
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
+    const [errors, setErrors] = useState({ email: '', password: '' });
 
     useEffect(() => {
-        console.log(auth);
-        if (!(auth === false)) {
-            navigate(routes.home);
+        if (user !== null) {
+            setTimeout(() => {
+                navigate(routes.home);
+            }, 500);
         }
-        // const token = localStorage.getItem('authToken');
-        // if (token) {
-        //     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        // }
-        // axios.get('account/user/')
-        //     .then((res) => {
-        //         navigate(routes.home);
-        //     })
-        //     .catch(function (error) {
-        //         localStorage.clear();
-        //         setAuth(false);
-        //         axios.defaults.headers.common['Authorization'] = null;
-        //     });
-    }, []);
+    }, [user]);
 
-    function handleLogin(e) {
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = { email: '', password: '' };
+
+        // Kiểm tra hợp lệ cho email
+        if (!email) {
+            isValid = false;
+            newErrors.email = 'Vui lòng nhập email.';
+        }
+        // else if (!isValidEmail(email)) {
+        //     isValid = false;
+        //     newErrors.email = 'Email không hợp lệ.';
+        // }
+
+        // Kiểm tra hợp lệ cho password
+        if (!password) {
+            isValid = false;
+            newErrors.password = 'Vui lòng nhập mật khẩu.';
+        }
+        // else if (!isValidPassword(password)) {
+        //     isValid = false;
+        //     newErrors.password = 'Hãy nhập lại password( Bao gồm trên 8 kí tự và có kí tự hoa).';
+        // }
+
+        // Cập nhật state errors để hiển thị lỗi (nếu có)
+        setErrors(newErrors);
+
+        return isValid;
+    };
+
+    const isValidEmail = (email) => {
+        // Sử dụng biểu thức chính quy để kiểm tra định dạng email
+        const emailRegex = /^[^\s@]+@gmail\.com$/i;
+        return emailRegex.test(email);
+    };
+
+    const isValidPassword = (password) => {
+        // Sử dụng biểu thức chính quy để kiểm tra định dạng email
+        const passwordRegex = /^(?=.*[A-Z]).{8,}$/;
+        return passwordRegex.test(password);
+    };
+
+    const handleLogin = async (e) => {
         e.preventDefault();
-        localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common['Authorization'] = null;
-        const sessionId = Cookies.get('sessionid', { domain: 'localhost', path: '/' });
-        console.log('Giá trị của sessionid:', sessionId);
-        Cookies.remove('sessionid');
-        axios.post("account/login/", {
-            email: email,
-            password: password,
-        })
-            .then((rep) => {
-                // setUserLogin(rep.data.user);
-                // localStorage.setItem('user_id', rep.data.user.id);
-                // localStorage.setItem('email', rep.data.user.email);
-                const token = rep.data.token;
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                localStorage.setItem('authToken', token);
-                openNotificationWithIcon('success', 'Đăng nhập thành công', `Đăng nhập tài khoản thành công!`);
-                // navigate(routes.home);
-                setTimeout(() => {
-                    navigate(routes.home);
-                }, 2000);
-            })
-            .catch((error) => {
-                openNotificationWithIcon('error', 'Đăng nhập lỗi', `Hãy nhập lại thông tin hoặc liên hệ cho Admin!`);
-            })
+        if (validateForm()) {
+            // localStorage.clear();
+            // setAuth(false);
+            // axios.defaults.headers.common['Authorization'] = null;
+            // const sessionId = Cookies.get('sessionid', { domain: 'localhost', path: '/' });
+            // console.log('Giá trị của sessionid:', sessionId);
+            // Cookies.remove('sessionid');
+            // axios.post("account/login/", {
+            //     email: email,
+            //     password: password,
+            // })
+            const userData = {
+                email: email,
+                password: password,
+            };
+            await login(userData);
+        } else {
+            console.log('form is not valid')
+        }
     }
 
     return (
         <>
-            {contextHolder}
             <div className={cx("wrapper"
             )}>
                 <div className={cx("inner")}>
@@ -94,7 +103,9 @@ function Login() {
                     </div>
                     <form onSubmit={handleLogin} className={cx("login__form")}>
                         <input placeholder="Email" value={email} name="email" onChange={(e) => setEmail(e.target.value)} />
+                        {errors.email && <div className={cx("error")}>{errors.email}</div>}
                         <input type="password" placeholder="Mật khẩu" value={password} name="password" onChange={(e) => setPassword(e.target.value)} />
+                        {errors.password && <div className={cx("error")}>{errors.password}</div>}
                         <div className={cx("login__form--btn")}>
                             <Button type="submit">Đăng nhập</Button>
                             <Link to={routes.forgotPassword}>Quên mật khẩu?</Link>

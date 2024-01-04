@@ -10,19 +10,11 @@ import {
 import axios from "axios";
 
 function DeleteAddress({ onOk, onCancel, title, open, data }) {
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
     const handleDeleteAddress = () => {
         axios.delete(`http://127.0.0.1:8000/account/delete_user_address/${data.id}/`)
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
-                openNotificationWithIcon('success', 'Xóa địa chỉ', `Bạn đã xóa địa chỉ mới thành công.`);
+                notification.success({ message: 'Xóa địa chỉ', description: 'Xóa địa chỉ thành công' });
                 setTimeout(() => {
                     onOk();
                 }, 2000);
@@ -30,14 +22,13 @@ function DeleteAddress({ onOk, onCancel, title, open, data }) {
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
                 console.error(error);
-                openNotificationWithIcon('error', 'Xóa địa chỉ', `Lỗi xóa địa chỉ hãy kiểm tra lại.`);
+                notification.success({ message: 'Xóa địa chỉ', description: 'Lỗi xóa địa chỉ hãy kiểm tra lại.' });
 
             });
     };
 
     return (
         <>
-            {contextHolder}
             <Modal
                 title={`${title} ${data?.full_name}`}
                 open={open}

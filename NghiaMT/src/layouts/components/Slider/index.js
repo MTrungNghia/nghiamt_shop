@@ -9,13 +9,13 @@ const cx = classNames.bind(styles)
 function Slider() {
     const listImageBanner = [
         {
+            image: images.slide2,
+        },
+        {
             image: images.slide,
         },
         {
             image: images.slide1,
-        },
-        {
-            image: images.bannerDragonBall,
         }
     ];
 
@@ -29,7 +29,7 @@ function Slider() {
     useEffect(() => {
         const interval = setInterval(() => {
             setNumberImageBanner((prevNumber) => (prevNumber + 1) % listImageBanner.length);
-        }, 120000);
+        }, 8000);
 
         return () => {
             clearInterval(interval);

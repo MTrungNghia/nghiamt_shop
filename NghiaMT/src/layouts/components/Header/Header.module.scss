@@ -1,6 +1,7 @@
 .wrapper {
-  height: 150px;
+  // height: 150px;
   background-color: var(--primary);
+  width: 100%;
 }
 
 .inner {
@@ -12,15 +13,15 @@
 }
 
 .logo {
-  width: 200px;
-  height: 150px;
+  width: 20%;
+  height: auto;
   padding: 8px;
   margin-right: 24px;
 }
 
 .logo img {
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  height: auto;
 }
 
 .container {
@@ -145,7 +146,7 @@
   position: relative;
   .navbar_inner {
     display: flex;
-    max-width: 55%;
+    max-width: 70%;
     justify-content: space-between;
     padding-top: 12px;
     .products__navbar::after {
@@ -214,8 +215,11 @@
       }
     }
   }
+  
 }
-
+.mobile_navbar {
+    display: none;
+  }
 .products__navbar:hover .products {
   display: flex;
 }
@@ -264,4 +268,89 @@
     opacity: 1;
     transform: translateY(0%);
   }
+}
+
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+  .logo {
+    width: 50%;
+    height: auto;
+  }
+  
+  .logo img {
+    width: 100%;
+    height: auto;
+  }
+  .navbar {
+    width: 100%;
+    .navbar_inner {
+      max-width: 80%;
+    }
+  }
+}
+
+@media (max-width: 895px) {
+  .wrapper {
+  // height: 150px;
+    position: relative;
+  } 
+  .logo {
+    width: 160px;
+    height: auto;
+  }
+    
+  .logo img {
+    width: 100%;
+    height: auto;
+  }
+  .content {
+    
+    .store-infor {
+      display: none;
+    }
+  
+    .user-infor {
+      display: none;
+    }
+  }
+  .navbar {
+    display: none;
+  }
+  
+  /* Styles for fixed footer */
+  .mobile_navbar {
+    display: block;
+    width: 100%;
+    height: 60px;
+    background-color: var(--white);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    z-index: 10;
+    .mobile_navbar--inner {
+      display: flex;
+      justify-content: space-between;
+      width: 88%;
+      margin-left: auto;
+      margin-right: auto;
+      .active {
+        color: var(--primary);
+      }
+    }
+  }
+  // .mobile_navbar {
+  //   display: flex;
+  //   height: 50px;
+  //   width: 100%;
+  //   background-color: #ccc;
+  // }
+}
+
+@media (max-width: 426px) {
+
 }

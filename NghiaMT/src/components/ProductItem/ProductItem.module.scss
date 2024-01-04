@@ -12,7 +12,7 @@
 
     img {
       width: 100%;
-      height: 270px;
+      height: auto;
       object-fit: cover;
       object-position: center;
       transition: transform 0.8s ease-in-out;
@@ -46,6 +46,33 @@
   width: calc(100% / 6 - 2px);
 }
 
+.colum12 {
+  width: calc(100% / 12 - 2px);
+}
+
 .big {
   width: calc(100% / 4 - 2px);
 }
+
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+
+}
+
+@media (max-width: 895px) {
+  .colum4 {
+    width: calc(100% / 4 - 2px);
+  }
+}
+
+@media (max-width: 426px) {
+  .colum4 {
+    width: calc(100% / 2 - 2px);
+  }
+}
+

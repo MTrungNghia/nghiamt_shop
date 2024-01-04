@@ -19,7 +19,12 @@ function Contact() {
                             <span>Liên hệ</span>
                         </div>
                         <div className={cx('content-main')}>
-                            <span>Thông tin đang được cập nhật</span>
+                            <div>
+                                <p><b>Trụ sở chính:</b> Km10, Đường Nguyễn Trãi, Q.Hà Đông, Hà Nội</p>
+                                <p><b>Email:</b> trungnghia@gmail.com</p>
+                                <p><b>Hotline:</b> 0981.31.33.35</p>
+                                <p><b>Hotline:</b> 0342 95 2312</p>
+                            </div>
                         </div>
                     </div>
                 </div>

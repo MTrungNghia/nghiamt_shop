@@ -42,6 +42,66 @@
         }
         .content-main {
             width: 100%;
+            img {
+              max-width: 100%;
+            }
+            .voucher_register {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              background-color: black;
+              padding: 12px 0;
+              border-radius: 10px;
+              .voucher_register_form {
+                background-color: var(--white);
+              }
+              .voucher_register_form {
+                max-width: 600px;
+                margin: auto;
+                padding: 20px;
+                border: 1px solid #ddd;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                justify-content: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+              }
+              
+              .voucher_register_form h5 {
+                font-size: 1.5em;
+                margin-bottom: 20px;
+                text-align: center;
+              }
+              
+              .voucher_register_form input {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 15px;
+                box-sizing: border-box;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+              }
+              
+              .voucher_register_form p {
+                color: #888;
+                margin-bottom: 15px;
+              }
+              
+              .voucher_register_form button {
+                background-color: #4caf50;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 1em;
+              }
+              
+              .voucher_register_form button:hover {
+                background-color: #45a049;
+              }
+            }
         }
     }
 }

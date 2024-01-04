@@ -17,18 +17,73 @@ from store.serializers import ProductSerializer
 from .serializers import OrderSerializers, OrderItemSerializers, DiscountCodeSerializers
 import base64
 
+import json
+import urllib.request
+import urllib
+import uuid
+import time
+import requests
+import hmac
+import hashlib
+
+@api_view(['POST'])
+def paymentWithMomo(request):
+    print(request.data)
+    total = request.data['total_price']
+    order_id = request.data['order_id']
+    endpoint = "https://test-payment.momo.vn/v2/gateway/api/create"
+    partnerCode = "MOMOBKUN20180529"
+    accessKey = "klm05TvNBzhg7h7j"
+    secretKey = "at67qH6mk8w5Y1nAyMoYKMWACiEi2bsa"
+    orderInfo = f'Thanh toan don hang NghiaMT Shop {order_id}'
+    redirectUrl = "http://localhost:3000/thankyou" #result
+    ipnUrl = "http://localhost:3000/thankyou" #ma giao dịch kết quả
+    amount = str(total)
+    orderId = str(uuid.uuid4())
+    requestId = str(uuid.uuid4())
+    requestType = "captureWallet"
+    extraData = ""  # pass empty value or Encode base64 JsonString
+    # rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl+ "&requestId=" + requestId + "&requestType=" + requestType
+    rawSignature = "accessKey=" + accessKey + "&amount=" + amount + "&extraData=" + extraData + "&ipnUrl=" + ipnUrl + "&orderId=" + orderId + "&orderInfo=" + orderInfo + "&partnerCode=" + partnerCode + "&redirectUrl=" + redirectUrl + "&requestId=" + requestId + "&requestType=" + requestType
+    h = hmac.new(bytes(secretKey, 'ascii'), bytes(rawSignature, 'ascii'), hashlib.sha256)
+    signature = h.hexdigest()
+    # json object send to MoMo endpoint
+
+    data = {
+        'partnerCode': partnerCode,
+        'partnerName': "Test",
+        'storeId': "Trung Nghia Store",
+        'requestId': requestId,
+        'amount': amount,
+        'orderId': orderId,
+        'orderInfo': orderInfo,
+        'redirectUrl': redirectUrl,
+        'ipnUrl': ipnUrl,
+        'lang': "en",
+        'extraData': extraData,
+        'requestType': requestType,
+        'signature': signature
+    }
+    data = json.dumps(data)
+
+    clen = len(data)
+    response = requests.post(endpoint, data=data, headers={'Content-Type': 'application/json', 'Content-Length': str(clen)})
+    return Response(response.json()['payUrl'])
 
 class DiscountCodeCreateAPIView(APIView):
     def get(self, request):
         sale_code = request.GET.get("sale_code", "")
         if not sale_code:
-            return Response({"error": "Sale code is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Nhập mã giảm giá là bắt buộc."}, status=status.HTTP_400_BAD_REQUEST)
         try:
             discount_code = DiscountCode.objects.get(name_code=sale_code)
-            serializer = DiscountCodeSerializers(discount_code)
-            return Response(serializer.data)
+            if(discount_code.quantity != 0):
+                serializer = DiscountCodeSerializers(discount_code)
+                return Response(serializer.data)
+            else:
+                return Response({"error": "Mã giảm giá đã hết lượt sử dụng."}, status=status.HTTP_404_NOT_FOUND)
         except DiscountCode.DoesNotExist:
-            return Response({"error": "Discount code not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Mã giảm giá không tồn tại."}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
         serializer = DiscountCodeSerializers(data=request.data)
@@ -40,11 +95,20 @@ class DiscountCodeCreateAPIView(APIView):
 
 def create_order_item(pro, order, quantity, price):
     product = Product.objects.get(id=pro)
+    product.inventory -= int(quantity)
+    product.quantity_sold = int(quantity)
+    product.save()
     print(product)
     order_Item = OrderItem(product=product, order=order, quantity=quantity, price=price)
     order_Item.save()
     return order_Item
 
+def UseDiscountCode(discount_code):
+    order = Order.objects.get(id=id)
+    order.order_status = 'CANCELLED'
+    order.save()
+
+    return Response('success', 200)
 
 @api_view(['POST'])
 def OrderCreate(request):
@@ -53,10 +117,15 @@ def OrderCreate(request):
     productList = request.data.getlist('product')
     pro_quantity = request.data.getlist('pro_quantity')
     price = request.data.getlist('price')
+    payment_method = data['payment_method']
+    print(payment_method)
     user_address = UserAddress.objects.get(id=data['user_address'])
     user = User.objects.get(id=data['user'])
-    if(data['discount_code'] != 'null' and data['discount_code'] != ''):
+    print(data['discount_code'])
+    if(data['discount_code'] != 'null' and data['discount_code'] != '' and data['discount_code'] != 'undefined'):
         discount_code = DiscountCode.objects.get(id=data['discount_code'])
+        discount_code.quantity -= 1
+        discount_code.save()
     else:
         discount_code = None
 
@@ -65,25 +134,23 @@ def OrderCreate(request):
     else:
         note = None    
     order = Order(user_address = user_address,
-                  user=user,
-                  discount_code = discount_code,
-                  note = note,
-                  quantity = data['quantity'],
-                  total_price = data['total_price'],
+                user=user,
+                discount_code = discount_code,
+                note = note,
+                payment_method=payment_method,
+                quantity = data['quantity'],
+                total_price = data['total_price'],
     )
+
     cart_id = data['cart']
     cart = Cart.objects.get(id=cart_id)
-    print(order.quantity)
-    print(order.total_price)
     # serializer = OrderSerializers(data=o)
     if order:
         order.save()
         newOrder = order.id
-        print(newOrder)
         for i in range(len(productList)):
-            print(productList[i])
             create_order_item(productList[i], order, pro_quantity[i], price[i])
-        cart.delete()
+        # cart.delete()
 
         return Response(newOrder, status=201)
 
@@ -125,9 +192,10 @@ def GetDetailOrderByUser(request, id):
         'address': user_address.address,
         'quantity': order_data['quantity'],
         'phone_number': user_address.phone_number,
-        # 'discount_code': order['discount_code'],
+        'discount_code': order.discount_code.discount if order.discount_code else None,
         'order_status': order_data['order_status'],
         'payment_method': order_data['payment_method'],
+        'payment_status': order_data['payment_status'],
         'total_price': order_data['total_price'],
         'date_added': order_data['date_added'],
         'note': order_data['note'],
@@ -166,38 +234,32 @@ def GetListOrder(request):
     return Response(order_list)
 
 @api_view(['GET'])
-def GetListOrderByUser(request):
-    auth = get_authorization_header(request).split()
+def GetListOrderByUser(request, userid):
+    user = User.objects.filter(pk=userid).first()
+    orders = Order.objects.filter(user=user).order_by('-id')
+    serializer = OrderSerializers(orders, many=True)
 
-    if auth and len(auth) == 2:
-        token = auth[1].decode('utf-8')
-        id = decode_access_token(token)
-        user = User.objects.filter(pk=id).first()
-        orders = Order.objects.filter(user=user)
-        serializer = OrderSerializers(orders, many=True)
+    order_list = []
+    for order in serializer.data:
+        user_address = UserAddress.objects.get(id=order['user_address'])
+        finish = order['order_status'] == 'Đã nhận hàng' or order['order_status'] == 'Đã hủy'
+        order_data = {
+            'id': order['id'],
+            'name': user_address.full_name,
+            'address': user_address.address,
+            'quantity': order['quantity'],
+            # 'discount_code': order['discount_code'],
+            'order_status': order['order_status'],
+            'payment_method': order['payment_method'],
+            'total_price': order['total_price'],
+            'date_added': order['date_added'],
+            'note': order['note'],
+            "finish": finish,
+        }
+        order_list.append(order_data)
 
-        order_list = []
-        for order in serializer.data:
-            user_address = UserAddress.objects.get(id=order['user_address'])
-            finish = order['order_status'] == 'Đã nhận hàng' or order['order_status'] == 'Đã hủy'
-            order_data = {
-                'id': order['id'],
-                'name': user_address.full_name,
-                'address': user_address.address,
-                'quantity': order['quantity'],
-                # 'discount_code': order['discount_code'],
-                'order_status': order['order_status'],
-                'payment_method': order['payment_method'],
-                'total_price': order['total_price'],
-                'date_added': order['date_added'],
-                'note': order['note'],
-                "finish": finish,
-            }
-            order_list.append(order_data)
+    return Response(order_list)
 
-        return Response(order_list)
-
-    raise AuthenticationFailed('Unauthenticated!')
 
 @api_view(['GET'])
 def StatiscalRevenue(request):
@@ -231,6 +293,22 @@ def StatiscalRevenue(request):
 def CancelOrder(request, id):
     order = Order.objects.get(id=id)
     order.order_status = 'CANCELLED'
+    order.save()
+
+    return Response('success', 200)
+
+@api_view(['DELETE'])
+def DeleteOrder(request, id):
+    order = Order.objects.get(id=id)
+    order.delete()
+
+    return Response('success', 200)
+
+@api_view(['POST'])
+def SuccessPaymentOrder(request, id):
+    order = Order.objects.get(id=id)
+    if(order.payment_method == 'MOMO'):
+        order.payment_status = 'SUCCESS'
     order.save()
 
     return Response('success', 200)

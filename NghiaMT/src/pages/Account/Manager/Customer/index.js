@@ -9,6 +9,7 @@ import {
     Input,
     Typography,
     Image,
+    notification,
 } from "antd";
 import axios from 'axios';
 import images from '~/assets/images';
@@ -210,14 +211,13 @@ const CustomerManager = () => {
                     // Xử lý phản hồi từ server (nếu cần)
                     console.log(response.data);
                     setReload(!reload);
-                    alert("thanhf coong");
+                    notification.success({ message: 'Cập nhật tài khoản', description: 'Cập nhật tài khoản thành công!' });
                     setVisitableEdit(false);
                 })
                 .catch(function (error) {
                     // Xử lý lỗi (nếu có)
                     console.error(error);
-                    alert("Loi");
-
+                    notification.error({ message: 'Cập nhật tài khoản', description: 'Cập nhật tài khoản thất bại!' });
                 });
         }
         if (visitableAdd) {
@@ -236,13 +236,14 @@ const CustomerManager = () => {
                 .then((response) => {
                     // Xử lý việc chuyển hướng sau khi đăng ký thành công
                     if (response.status === 200) {
-                        alert("Thêm khách hàng thành công!");
+                        notification.success({ message: 'Thêm khách hàng', description: 'Thêm khách hàng thành công!' });
                         setVisitableAdd(false);
                         setReload(!reload);
                     }
                 })
                 .catch((error) => {
                     // Xử lý khi có lỗi xảy ra trong quá trình đăng ký
+                    notification.error({ message: 'Thêm khách hàng', description: 'Thêm khách hàng thất bại!' });
                     console.error(error);
                 });
         }
@@ -252,14 +253,13 @@ const CustomerManager = () => {
                     // Xử lý phản hồi từ server (nếu cần)
                     console.log(response.data);
                     setReload(!reload);
-                    alert("Xoas thanhf coong");
+                    notification.success({ message: 'Xóa tài khoản', description: 'Xóa tài khoản thành công' });
                     setVisitableDelete(false);
                 })
                 .catch(function (error) {
                     // Xử lý lỗi (nếu có)
                     console.error(error);
-                    alert("Loi");
-
+                    notification.error({ message: 'Xóa tài khoản', description: 'Xóa tài khoản thất bại' });
                 });
         }
         setTimeout(() => {
@@ -320,9 +320,9 @@ const CustomerManager = () => {
                             <Form.Item name='Email' label="Email">
                                 <Input value={accountEmail} onChange={(e) => setAccountEmail(e.target.value)} />
                             </Form.Item>
-                            <Form.Item name='password' label="Mật khẩu">
+                            {/* <Form.Item name='password' label="Mật khẩu">
                                 <Input value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} />
-                            </Form.Item>
+                            </Form.Item> */}
                             <Form.Item name='is_admin' label="">
                                 <Checkbox onChange={(e) => setIsAdmin(e.target.checked)}>Chọn làm Admin</Checkbox>
                             </Form.Item>
@@ -369,11 +369,11 @@ const CustomerManager = () => {
                                 <Input value={accountLastName} onChange={(e) => setAccountLastName(e.target.value)} />
                             </Form.Item>
                             <Form.Item name='email' initialValue={accountEmail} label="Email">
-                                <Input value={accountEmail} onChange={(e) => setAccountEmail(e.target.value)} />
+                                <Input disabled value={accountEmail} onChange={(e) => setAccountEmail(e.target.value)} />
                             </Form.Item>
-                            <Form.Item name='password' label="Mật khẩu">
+                            {/* <Form.Item name='password' label="Mật khẩu">
                                 <Input value={accountPassword} onChange={(e) => setAccountPassword(e.target.value)} />
-                            </Form.Item>
+                            </Form.Item> */}
                             <Form.Item name='is_admin' initialValue={isAdmin} label="">
                                 <Checkbox checked={isAdmin} onChange={(e) => setIsAdmin(e.target.checked)}>Chọn làm Admin</Checkbox>
                             </Form.Item>
@@ -394,7 +394,7 @@ const CustomerManager = () => {
                             // onClick={handleReload}
                             className={cx('custom_reload_button')}
                         />
-                        <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm người dùng</Button>
+                        {/* <Button style={{ marginLeft: '10px' }} primary effect onClick={handleAdd}>Thêm người dùng</Button> */}
                     </div>
                     <Table
                         columns={columns}

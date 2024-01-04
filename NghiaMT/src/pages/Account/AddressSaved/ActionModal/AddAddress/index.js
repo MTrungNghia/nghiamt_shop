@@ -1,6 +1,6 @@
 import classNames from "classnames/bind";
 import styles from "./AddAddress.module.scss";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Button from "~/components/Button";
 import axios from "axios";
 import { Divider, Modal, notification } from "antd";
@@ -32,31 +32,21 @@ function AddAddress({ onOk, onCancel, title, open, userId }) {
         // Gửi dữ liệu đến server
         axios.post('account/create_user_address/', formData)
             .then(function (response) {
-                openNotificationWithIcon('success', 'Thêm địa chỉ mới', `Bạn đã thêm địa chỉ mới thành công.`);
+                notification.success({ message: 'Thêm địa chỉ mới', description: `Bạn đã thêm địa chỉ mới thành công.` });
                 setTimeout(() => {
                     onOk();
                 }, 2000);
                 console.log(response.data);
             })
             .catch(function (error) {
-                openNotificationWithIcon('error', 'Thêm địa chỉ mới', `Lỗi thêm địa chỉ hãy kiểm tra lại.`);
+                notification.error({ message: 'Thêm địa chỉ mới', description: `Lỗi thêm địa chỉ hãy kiểm tra lại.` });
                 // Xử lý lỗi (nếu có)
                 console.error(error);
             });
     };
 
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
-
     return (
         <>
-            {contextHolder}
             <Modal
                 title={title}
                 open={open}

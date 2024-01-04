@@ -13,14 +13,15 @@ footer {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        .wid25 {
+            width: 25%;
+        }
 
         .logo {
-            width: 25%;
             align-items: center;
             text-align: center;
         }
         .policy {
-            width: 25%;
             a {
                 font-weight: 300;
                 line-height: 2.4rem;
@@ -32,7 +33,6 @@ footer {
         }
         .map,
         .fanpage {
-            width: 25%;
             display: flex;
             flex-direction: column;
             margin-right: 16px;
@@ -114,4 +114,62 @@ li {
     font-size: 1.8rem;
     display: block;
     margin-bottom: 12px;
+}
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+
+}
+
+@media (max-width: 895px) {
+    .inner {
+        .content-footer {
+            display: grid!important;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 12px;
+            .wid25 {
+                width: 45%;
+            }
+        }
+    }
+    .infor-shop {
+        display: grid!important;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        .contact {
+            grid-column: span 2;
+        }
+        .link-outside-shop {
+            width: 100%!important;
+        }
+        .shop_system {
+            width: 100%!important;
+        }
+    }
+}
+
+@media (max-width: 426px) {
+    .inner {
+        .content-footer {
+            // display: grid!important;
+            // grid-template-columns: repeat(2, 1fr);
+            // gap: 16px;
+            display: flex!important;
+            flex-direction: column;
+            margin-bottom: 12px;
+            .wid25 {
+                width: 100%;
+            }
+        }
+    }
+    .infor-shop {
+        display: flex!important;
+        flex-direction: column;
+    }
 }

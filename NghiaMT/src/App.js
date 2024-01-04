@@ -2,7 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { publicRoutes, privateRoutes } from './routes';
 import { Button, ConfigProvider, Space } from 'antd';
 import DefaultLayout from './layouts/Defaulayout';
-import LayoutDefaultAdmin from '../src/pages/Admin/index';
 import { Fragment } from 'react';
 import ScrollToTop from './components/ScrollToTop';
 function App() {
@@ -19,7 +18,6 @@ function App() {
         },
       }}
     >
-
       <Router>
         <ScrollToTop />
         <div className="App">
@@ -39,7 +37,7 @@ function App() {
               />)
             })}
 
-            {privateRoutes.map((route, index) => {
+            {/* {privateRoutes.map((route, index) => {
               const Page = route.component;
               let Layout = LayoutDefaultAdmin;
               if (route.layout === null) {
@@ -52,7 +50,7 @@ function App() {
                   children={<Page />}
                 />}
               />)
-            })}
+            })} */}
 
           </Routes>
         </div>

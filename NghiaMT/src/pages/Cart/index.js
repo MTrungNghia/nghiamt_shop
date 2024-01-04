@@ -5,13 +5,13 @@ import routes from "~/config/routes";
 import Image from "~/components/Image";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faAdd, faSubtract } from "@fortawesome/free-solid-svg-icons";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 // import Button from "~/components/Button";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { setAuth } from "~/redux/slice/authSlide";
-import { Button, Flex } from 'antd';
+import Button from '~/components/Button';
 import Cookies from 'js-cookie';
+import { CartContext } from "~/context/cartContext";
 
 const cx = classNames.bind(styles);
 
@@ -22,6 +22,8 @@ function Cart() {
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalProduct, setTotalProduct] = useState(0);
     const [transportFee, setTransportFee] = useState(0);
+    const { CartProvider, updateCartItemQuantity, removeFromCart } = useContext(CartContext);
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -35,13 +37,9 @@ function Cart() {
                 console.log(response.data.cart_detail.list_product);
                 setCartDetail(response.data.cart_detail);
                 setListProduct(response.data.cart_detail.list_product);
-                console.log(cartDetail);
-                console.log(listProduct);
-                dispatch(setAuth(true));
             })
             .catch((error) => {
                 console.error(error);
-                dispatch(setAuth(false));
                 if (error.response.status === 403) {
                     alert("Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!");
                     navigate(routes.login);
@@ -77,89 +75,137 @@ function Cart() {
         const [productNumber, setProductNumber] = useState(product.quantity);
         const productInvetory = product.inventory;
         const csrfToken = Cookies.get('csrftoken');
-        const handleSub = () => {
+        const handleSub = async () => {
             if (productNumber > 1) {
                 const updatedQuantity = productNumber - 1;
-                axios.post("cart/update_cart_item/", {
+                const updatedCart = {
                     product_slug: product.slug,
-                    p_quantity: updatedQuantity,
-                }, {
-                    headers: {
-                        'X-CSRFToken': csrfToken,
-                    },
-                })
+                    p_quantity: updatedQuantity
+                };
+                await updateCartItemQuantity(updatedCart)
                     .then((response) => {
-                        setProductNumber(updatedQuantity);
-                        setLoadBack(!loadBack);
-                    })
-            } else {
-                alert(`Số lượng cần chọn phải lớn hơn 0`);
-            }
-
-        }
-        const handleAdd = () => {
-            if (productInvetory >= productNumber + 1) {
-                const updatedQuantity = productNumber + 1;
-                axios
-                    .post("cart/update_cart_item/", {
-                        product_slug: product.slug,
-                        p_quantity: updatedQuantity,
-                    }, {
-                        headers: {
-                            'X-CSRFToken': csrfToken,
-                        },
-                    })
-                    .then((response) => {
-                        setProductNumber(updatedQuantity);
+                        setTimeout(() => {
+                            setProductNumber(updatedQuantity);
+                            setLoadBack(!loadBack);
+                        }, 300);
                     })
                     .catch((error) => {
                         console.log(error);
                     });
+
+            } else {
+                alert(`Số lượng cần chọn phải lớn hơn 0`);
+            }
+        }
+        const handleAdd = async () => {
+            if (productInvetory >= productNumber + 1) {
+                const updatedQuantity = productNumber + 1;
+                const updatedCart = {
+                    product_slug: product.slug,
+                    p_quantity: updatedQuantity
+                };
+                await updateCartItemQuantity(updatedCart)
+                    .then((response) => {
+                        setTimeout(() => {
+                            setProductNumber(updatedQuantity);
+                            setLoadBack(!loadBack);
+                        }, 300);
+                    })
+                    .catch((error) => {
+                        console.log(error);
+                    });
+                // axios
+                //     .post("cart/update_cart_item/", {
+                //         product_slug: product.slug,
+                //         p_quantity: updatedQuantity,
+                //     }, {
+                //         headers: {
+                //             'X-CSRFToken': csrfToken,
+                //         },
+                //     })
+                //     .then((response) => {
+
+                //     })
+                //     .catch((error) => {
+                //         console.log(error);
+                //     });
             } else {
                 setProductNumber(productInvetory);
                 alert(`Số lượng trong kho chỉ là ${productInvetory}`);
             }
         };
 
-        const handleInput = (e) => {
+        const handleInput = async (e) => {
             if (productInvetory >= (Number(e.target.value))) {
-                const updatedQuantity = Number(e.target.value);
+                let updatedQuantity = Number(e.target.value);
+                if (updatedQuantity === 0) {
+                    updatedQuantity = 1;
+                }
 
-                axios.post("cart/update_cart_item/", {
+                const updatedCart = {
                     product_slug: product.slug,
-                    p_quantity: updatedQuantity,
-                }, {
-                    headers: {
-                        'X-CSRFToken': csrfToken,
-                    },
-                })
+                    p_quantity: updatedQuantity
+                };
+                await updateCartItemQuantity(updatedCart)
                     .then((response) => {
-                        setProductNumber(updatedQuantity);
-                        setLoadBack(!loadBack);
+                        setTimeout(() => {
+                            setProductNumber(updatedQuantity);
+                            setLoadBack(!loadBack);
+                        }, 300);
                     })
-            } else {
+                    .catch((error) => {
+                        console.log(error);
+                    });
+
+                // axios.post("cart/update_cart_item/", {
+                //     product_slug: product.slug,
+                //     p_quantity: updatedQuantity,
+                // }, {
+                //     headers: {
+                //         'X-CSRFToken': csrfToken,
+                //     },
+                // })
+                //     .then((response) => {
+                //         setProductNumber(updatedQuantity);
+                //         setLoadBack(!loadBack);
+                //     })
+            }
+            else {
                 setProductNumber(productInvetory);
                 alert(`Số lượng trong kho chỉ là ${productInvetory}`);
             }
 
         }
 
-        const handleDelete = (e) => {
+        const handleDelete = async (e) => {
             e.preventDefault();
-            axios.post("cart/remove_item_in_cart/", {
-                product_slug: product.slug,
-            }, {
-                headers: {
-                    'X-CSRFToken': csrfToken,
-                },
-            })
+            const dataRemove = {
+                product_slug: product.slug
+            };
+            await removeFromCart(dataRemove)
                 .then((response) => {
-                    console.log(response);
-                    setLoadBack(!loadBack);
+                    setTimeout(() => {
+                        setLoadBack(!loadBack);
+                    }, 300);
                 })
                 .catch((error) => {
                     console.log(error);
                 });
+
+            // axios.post("cart/remove_item_in_cart/", {
+            //     product_slug: product.slug,
+            // }, {
+            //     headers: {
+            //         'X-CSRFToken': csrfToken,
+            //     },
+            // })
+            //     .then((response) => {
+            //         console.log(response);
+            //         setLoadBack(!loadBack);
+            //     })
+            //     .catch((error) => {
+            //         console.log(error);
+            //     });
         }
 
         return (
@@ -197,32 +243,40 @@ function Cart() {
                 <span>&nbsp;Giỏ hàng của bạn</span>
             </div>
             <div className={cx('content')}>
-                <table>
-                    <thead>
-                        <tr>
-                            <th colSpan={2}>Sản phẩm</th>
-                            <th>Đơn giá</th>
-                            <th>Số lượng</th>
-                            <th>Số tiền</th>
-                            <th>Thao tác</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {listProduct.map((item, index) => (
-                            <tr key={index}>
-                                <td colSpan={2}>
-                                    <ProductItem product={item} />
-                                </td>
-                                <td>
-                                    <span>{Number(item.price).toLocaleString()}</span>
-                                </td>
-                                <ProductQuantity product={item} />
+                {
+                    listProduct.length !== 0 ? (
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colSpan={2}>Sản phẩm</th>
+                                    <th>Đơn giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Số tiền</th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {listProduct.map((item, index) => (
+                                    <tr key={index}>
+                                        <td colSpan={2}>
+                                            <ProductItem product={item} />
+                                        </td>
+                                        <td>
+                                            <span>{Number(item.price).toLocaleString()}</span>
+                                        </td>
+                                        <ProductQuantity product={item} />
 
-                            </tr>
-                        ))}
-                    </tbody>
-
-                </table>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    ) : (
+                        <div className={cx('no_content')}>
+                            <span>Giỏ hàng trống. Chưa có sản phẩm nào được thêm!</span>
+                            <Button to={routes.home} primary effect={true} className={cx('btn-buy')}>Tiếp tục mua hàng</Button>
+                        </div>
+                    )
+                }
                 <div className={cx('cart-total')}>
                     <div className={cx('cart-total--title')}>
                         <span>Thông tin giỏ hàng</span>

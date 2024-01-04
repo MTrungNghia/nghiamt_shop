@@ -5,73 +5,31 @@ import routes from "~/config/routes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExchange, faLocation, faPowerOff, faUser, faUserGear } from "@fortawesome/free-solid-svg-icons";
 import images from "~/assets/images";
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
 import { Switch } from "antd";
 import RightNavbar from "../components/RightNavbar";
+import { UserContext } from "~/context/userContext";
 
 const cx = classNames.bind(styles);
 
 function Profile() {
-    // const user_id = localStorage.getItem('user_id');
-    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const token = localStorage.getItem('authToken');
-        if (token) {
-            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-        }
-        axios.get('account/user/')
-            .then((res) => {
-                setUser(res.data);
-                dispatch(setAuth(true));
-            })
-            .catch(function (error) {
-                dispatch(setAuth(false));
-                if (error.response.status === 403) {
-                    navigate(routes.home);
-                }
-            });
-    }, [dispatch, navigate]);
-
-    function ListLi({ onClick, to, icon, title }) {
-        return (
-            <a onClick={onClick} href={to}>
-                <FontAwesomeIcon icon={icon} />
-                <span>{title}</span>
-            </a>
-        )
-    }
-
-    function handleLogout() {
-        localStorage.clear();
-        setAuth(false);
-        axios.defaults.headers.common['Authorization'] = null;
-        axios.post("account/logout/")
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            })
-        navigate(routes.login);
-    }
+    const { user } = useContext(UserContext);
 
     return (
         <RightNavbar>
             <>
                 <div className={cx('profile__detail--infor')}>
                     <h3>Thông tin tài khoản</h3>
-                    {user !== null && (
-                        <span><b>Họ tên:</b> {user.last_name + " " + user.first_name}</span>
-                    )}
-                    {user !== null && (
-                        <span><b>Email:</b> {user.email}</span>
-                    )}
+                    {user !== null &&
+                        <>
+                            <span><b>Họ tên:</b> {user.last_name + " " + user.first_name}</span>
+                            <span><b>Email:</b> {user.email}</span>
+                        </>
+                    }
                 </div>
             </>
         </RightNavbar>

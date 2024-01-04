@@ -6,16 +6,17 @@ import images from '~/assets/images';
 import Button from '~/components/Button';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAdd, faCartShopping, faHandshake, faMedal, faShield, faSubtract, faTruckFast } from '@fortawesome/free-solid-svg-icons';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import Image from '~/components/Image';
-import { setAuth } from '~/redux/slice/authSlide';
 import { useDispatch } from 'react-redux';
 import Comments from './Comments';
 import Cookies from 'js-cookie';
 import RateProduct from './RateProduct';
 import CustomButton from '~/components/Antd/Button';
-import { Alert, notification } from 'antd';
+import { notification } from 'antd';
+import { CartContext } from '~/context/cartContext';
+import { UserContext } from '~/context/userContext';
 
 const cx = classNames.bind(styles);
 
@@ -28,17 +29,12 @@ function Product() {
     const [visitRatePorduct, setVisitRatePorduct] = useState(false);
     const [dataRateProduct, setDataRateProduct] = useState(null);
     const [reload, setReload] = useState(false);
+    const { addToCart } = useContext(CartContext);
+    const { user } = useContext(UserContext);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
-    };
 
     useEffect(() => {
         axios.get(`http://127.0.0.1:8000/product/detail/${productName}/`)
@@ -106,7 +102,7 @@ function Product() {
         setProductNumber(productNumber + 1)
     }
 
-    function handleAddProduct(e) {
+    async function handleAddProduct(e) {
         e.preventDefault();
         const csrfToken = Cookies.get('csrftoken');
         const token = localStorage.getItem('authToken');
@@ -116,25 +112,29 @@ function Product() {
         if (product.inventory <= productNumber) {
             setProductNumber(product.inventory)
         }
-        axios.post("cart/add_item_cart/", {
+        const addCart = {
             product_slug: product.slug,
-            p_quantity: productNumber,
-        }, {
-            headers: {
-                'X-CSRFToken': csrfToken,
-            },
-        })
-            .then((response) => {
-                // alert("Thêm sản phẩm vào giỏ hàng thành công");
-                openNotificationWithIcon('success', 'Thêm sản phẩm thành công', `Bạn đã thêm ${product.product_name} vào giỏ hàng thành công`);
-                console(response);
-            })
-            .catch(function (error) {
-                if (error.response.status === 403) {
-                    openNotificationWithIcon('warning', 'Thông báo', 'Hãy đăng nhập hoặc tạo tài khoản để tiếp tục!');
-                    navigate(routes.login);
-                }
-            });
+            p_quantity: productNumber
+        };
+        console.log(user);
+
+        if (user === null) {
+            notification.warning({ message: 'Thông báo', description: 'Hãy đăng nhập hoặc tạo tài khoản!' });
+            setTimeout(() => {
+                navigate(routes.login);
+            }, 500);
+        }
+
+        await addToCart(addCart);
+
+        // axios.post("cart/add_item_cart/", {
+        //     product_slug: product.slug,
+        //     p_quantity: productNumber,
+        // }, {
+        //     headers: {
+        //         'X-CSRFToken': csrfToken,
+        //     },
+        // })
     }
 
     const handleRateProduct = () => {
@@ -206,7 +206,7 @@ function Product() {
                                         </div>
                                         <div className={cx('status')}>
                                             <span>Loại:&nbsp;</span>
-                                            <p>Mô hình mecha/gundam</p>
+                                            <p>{product.category_name}</p>
                                         </div>
                                     </div>
                                     <div className={cx('product__detail--infor--main')}>
@@ -240,7 +240,7 @@ function Product() {
                                                         leftIcon={<FontAwesomeIcon icon={faCartShopping}
                                                         />}
                                                     >Thêm vào giỏ</Button>
-                                                    <Button effect={true} className={cx('btn-buy')}>Mua ngay</Button>
+                                                    <Button disabled className={cx('btn-buy')}>Mua ngay</Button>
                                                 </>
                                             ) : (
                                                 <>

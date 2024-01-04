@@ -10,14 +10,14 @@ import Button from "~/components/Button";
 import { useDispatch } from "react-redux";
 import { setAuth } from "~/redux/slice/authSlide";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { notification } from "antd";
+import { CartContext } from "~/context/cartContext";
 
 const cx = classNames.bind(styles);
 
 // function CheckOut({ user_id, listProduct }) {
 function CheckOut() {
-
     const [cartDetail, setCartDetail] = useState({});
     const [listProduct, setListProduct] = useState([]);
     const [loadBack, setLoadBack] = useState(false);
@@ -25,6 +25,7 @@ function CheckOut() {
     const [transportFee, setTransportFee] = useState(40000);
     const [totalAllPrice, setTotalAllPrice] = useState(0);
     const [user, setUser] = useState(null);
+    const { cart, deleteCart, applyOrderId } = useContext(CartContext);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -66,9 +67,11 @@ function CheckOut() {
 
     const [quantity, setQuantity] = useState(0);
 
+    const [discountCodeInput, setDiscountCodeInput] = useState(null);
     const [discountCode, setDiscountCode] = useState(null);
     const [discountAmount, setDiscountAmounte] = useState(0);
     const [numberAddress, setNumberAddress] = useState(0);
+    const [paymentMethod, setPaymentMethod] = useState('COD');
 
     const [isChecked, setIsChecked] = useState(true);
 
@@ -81,7 +84,10 @@ function CheckOut() {
         setTotalPrice(totalPriceProducts);
         if (discountAmount !== 0 && discountAmount > totalPriceProducts + transportFee) {
             setTotalAllPrice(0);
-        } else {
+        } else if (discountAmount !== 0) {
+            setTotalAllPrice(totalPriceProducts - discountAmount + transportFee);
+        }
+        else {
             setTotalAllPrice(totalPriceProducts + transportFee);
         }
         console.log(listProduct);
@@ -109,8 +115,7 @@ function CheckOut() {
             if (response.data.length !== 0) {
                 setListAddress(response.data);
             } else {
-                openNotificationWithIcon('warning', 'Thêm địa chỉ', `Bạn chưa lưu địa chỉ, hãy thêm địa chỉ để tiếp tục!`);
-                console.log('hello');
+                notification.warning({ message: 'Thêm địa chỉ', description: 'Bạn chưa lưu địa chỉ, hãy thêm địa chỉ để tiếp tục!' });
                 setTimeout(() => {
                     navigate(routes.addressSaved);
                 }, 3000);
@@ -119,15 +124,6 @@ function CheckOut() {
         } catch (error) {
             // Xử lý lỗi nếu cần thiết
         }
-    };
-
-    const [api, contextHolder] = notification.useNotification();
-
-    const openNotificationWithIcon = (type, message, description) => {
-        api[type]({
-            message: message,
-            description: description,
-        });
     };
 
     function handleForm(e) {
@@ -140,6 +136,7 @@ function CheckOut() {
         console.log(cartDetail);
         formData.append("cart", cartDetail.cart.id);
         formData.append("user_address", currentAddress.id);
+        formData.append("payment_method", paymentMethod);
         if (discountCode !== null && discountCode !== '') {
             console.log(discountCode);
             formData.append("discount_code", discountCode.id);
@@ -158,12 +155,35 @@ function CheckOut() {
         });
 
         // Gửi dữ liệu đến server
+
         axios.post('http://127.0.0.1:8000/order/create-order/', formData)
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
-                alert("Đặt hàng thành công");
-                navigate(routes.orders);
+                // alert("Đặt hàng thành công");
+                // reloadCart();
+                if (paymentMethod === 'MOMO') {
+                    applyOrderId(response.data);
+                    axios.post(`http://127.0.0.1:8000/order/payment-momo/`, {
+                        order_id: response.data,
+                        total_price: totalAllPrice,
+                    })
+                        .then(function (response) {
+                            console.log(response.data);
+                            window.location.href = response.data;
+                            // window.open(response.data, '_blank');
+                        })
+                        .catch(function (error) {
+                            // Xử lý lỗi (nếu có)
+                            notification.error({ message: 'Tạo đơn hàng', description: 'Tạo đơn hàng thất bại!' });
+                            console.error(error);
+                        });
+                } else if (paymentMethod === 'COD') {
+                    deleteCart();
+                    notification.success({ message: 'Tạo đơn hàng', description: 'Tạo đơn hàng thành công!' });
+                    navigate(`/thankyou?paymentMethod=${paymentMethod}`);
+                }
+                // navigate(routes.orders);
             })
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
@@ -199,19 +219,25 @@ function CheckOut() {
 
     }
 
+    const handleInputPaymentMethodChange = (event) => {
+        setPaymentMethod(event.target.value);
+        console.log(event.target.value);
+    };
+
     const handleSaleCode = (e) => {
         e.preventDefault();
-        axios.get(`order/create-discount-code/?sale_code=${discountCode}`)
+        axios.get(`order/create-discount-code/?sale_code=${discountCodeInput}`)
             .then(response => {
                 // Xử lý dữ liệu khi nhận phản hồi thành công
                 console.log(response.data);
                 setDiscountAmounte(response.data.discount);
-                // setDiscountCode(response.data);
+                setDiscountCode(response.data);
                 setLoadBack(!loadBack);
             })
             .catch(error => {
                 // Xử lý lỗi khi có lỗi trong quá trình yêu cầu
-                console.error(error);
+                notification.error({ message: 'Mã giảm giá', description: error.response.data.error });
+                console.error(error.response.data.error);
             });
     }
 
@@ -226,7 +252,6 @@ function CheckOut() {
 
     return (
         <>
-            {contextHolder}
             <div className={cx('wrapper')}>
                 <form onSubmit={handleForm} className={cx('inner')}>
                     <div className={cx('infor-order')}>
@@ -299,8 +324,28 @@ function CheckOut() {
                                     <h5>Thanh toán</h5>
                                     <div className={cx('infor-ship--checkout__main')}>
                                         <div className={cx('checkout__main')}>
-                                            <input type="checkbox" onChange={handleInputChange} />
+                                            <input
+                                                type="checkbox"
+                                                name="payment_method"
+                                                value="COD"
+                                                checked={paymentMethod === 'COD'}
+                                                onChange={handleInputPaymentMethodChange}
+                                            />
                                             <label>Thanh toán khi nhận hàng</label>
+                                        </div>
+                                        <FontAwesomeIcon icon={faMoneyBill} />
+                                    </div>
+
+                                    <div className={cx('infor-ship--checkout__main')}>
+                                        <div className={cx('checkout__main')}>
+                                            <input
+                                                type="checkbox"
+                                                name="payment_method"
+                                                value="MOMO"
+                                                checked={paymentMethod === 'MOMO'}
+                                                onChange={handleInputPaymentMethodChange}
+                                            />
+                                            <label>Thanh toán bằng ví Momo</label>
                                         </div>
                                         <FontAwesomeIcon icon={faMoneyBill} />
                                     </div>
@@ -318,14 +363,15 @@ function CheckOut() {
 
                             ))}
                         </div>
+
                         <div className={cx('infor-total--code-sale')}>
                             <div className={cx('form-group')}>
                                 <input type="name"
                                     name="sale-code"
                                     className={cx('form-control')}
                                     id="inputField"
-                                    value={discountCode}
-                                    onChange={(e) => setDiscountCode(e.target.value)}
+                                    value={discountCodeInput}
+                                    onChange={(e) => setDiscountCodeInput(e.target.value)}
                                 />
                                 <label for="inputField" className={cx('floating-label')}>Nhập mã giảm giá</label>
                                 <Button onClick={handleSaleCode} primary effect>Áp dụng</Button>
@@ -338,6 +384,7 @@ function CheckOut() {
                             )}
 
                         </div>
+
                         <div className={cx('infor-total--detail')}>
                             <div className={cx('infor-total--main-item')}>
                                 <label>Tạm tính</label>
@@ -366,3 +413,18 @@ function CheckOut() {
 }
 
 export default CheckOut;
+// http://127.0.0.1:3000/?
+// partnerCode=MOMOBKUN20180529&
+// orderId=61c790a9-9618-4093-a5a2-f8c39e0f508e&
+// requestId=6b6dcda4-bcec-46bd-b921-11abdbb98043&
+// amount=51000&
+// orderInfo=Thanh+toan+don+hang+NghiaMT+Shop&
+// orderType=momo_wallet&
+// transId=3107906187&
+// resultCode=0&
+// message=Th%C3%A0nh+c%C3%B4ng.&
+// payType=qr&
+// responseTime=1702545864735&
+// extraData=&
+// signature=789beb872d4640471d326439368ee4966e053f09e9206bb49eb8b3a56d25f181&
+// paymentOption=momo

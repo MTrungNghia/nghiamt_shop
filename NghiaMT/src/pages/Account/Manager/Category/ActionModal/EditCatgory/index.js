@@ -8,8 +8,8 @@ import {
     Form,
     Input,
     Typography,
-    Image,
     Divider,
+    notification,
 } from "antd";
 import axios from 'axios';
 import { ReloadOutlined } from '@ant-design/icons';
@@ -20,23 +20,10 @@ import CustomButton from '~/components/Antd/Button';
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { message, Upload } from 'antd';
 import { RcFile, UploadFile, UploadProps } from 'antd/es/upload/interface';
+import ImgCrop from 'antd-img-crop';
 
-const { Title } = Typography;
 const { TextArea } = Input;
 // const cx = classNames.bind(styles);
-
-
-const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-};
 
 function EditCategory({ onOk, onCancel, title, open, data }) {
     const [editForm] = Form.useForm();
@@ -44,7 +31,9 @@ function EditCategory({ onOk, onCancel, title, open, data }) {
     const [categoryName, setCatergoryName] = useState("");
     const [categoryDes, setCatergoryDes] = useState("");
     const [selectImage1, setselectImagen1] = useState(null);
-
+    const [fileList, setFileList] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
 
 
     function onHandleCreate() {
@@ -54,60 +43,56 @@ function EditCategory({ onOk, onCancel, title, open, data }) {
         if (Image1 !== null) {
             formData.append('cate_image', Image1);
         }
-        // if (Image1 instanceof File) {
-        //     formData.append('cate_image', Image1, Image1.name);  // Đặt tên cho file
-        // }
-
-        console.log(formData);
-        console.log(categoryName);
-        console.log(categoryDes);
-        console.log(Image1);
         axios.post(`http://127.0.0.1:8000/category/update/${data.id}/`, formData)
             .then(function (response) {
                 // Xử lý phản hồi từ server (nếu cần)
                 console.log(response.data);
+                notification.success({ message: 'Cập nhật loại sản phẩm', description: 'Cập nhật loại sản phẩm thành công!' });
                 onOk();
             })
             .catch(function (error) {
                 // Xử lý lỗi (nếu có)
+                notification.error({ message: 'Cập nhật loại sản phẩm', description: 'Cập nhật loại sản phẩm thất bại!' });
                 console.error(error);
                 alert("Loi");
-
             });
     };
 
     useEffect(() => {
         setImageUrl(`http://localhost:8000${data.cate_image}`);
+        setFileList([
+            {
+                uid: "-1",
+                name: "image.png",
+                status: "done",
+                url: `http://localhost:8000${data.cate_image}`,
+            },
+        ]);
         setCatergoryName(data.category_name);
         setCatergoryDes(data.description);
         editForm.setFieldValue('nameEdit', data.category_name);
         editForm.setFieldValue('descriptionEdit', data.description);
     }, [data]);
 
-    const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState('');
-
-    const getBase64 = (img, callback) => {
-        const reader = new FileReader();
-        reader.addEventListener('load', () => callback(reader.result));
-        reader.readAsDataURL(img);
+    const onChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+        setImage1(newFileList[0].originFileObj);
     };
 
-    const handleChange = (info) => {
-        console.log(info.file);
-        setImage1(info.file.originFileObj);
-        console.log(Image1);
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj, (url) => {
-                setLoading(false);
-                setImageUrl(url);
+    const onPreview = async (file) => {
+        let src = file.url;
+        if (!src) {
+            src = await new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
             });
         }
+        const image = new Image();
+        image.src = src;
+        console.log(image);
+        const imgWindow = window.open(src);
+        imgWindow?.document.write(image.outerHTML);
     };
 
     const uploadButton = (
@@ -116,6 +101,39 @@ function EditCategory({ onOk, onCancel, title, open, data }) {
             <div style={{ marginTop: 8 }}>Upload</div>
         </div>
     );
+
+    // const [loading, setLoading] = useState(false);
+    // const [imageUrl, setImageUrl] = useState('');
+
+    // const getBase64 = (img, callback) => {
+    //     const reader = new FileReader();
+    //     reader.addEventListener('load', () => callback(reader.result));
+    //     reader.readAsDataURL(img);
+    // };
+
+    // const handleChange = (info) => {
+    //     console.log(info.file);
+    //     setImage1(info.file.originFileObj);
+    //     console.log(Image1);
+    //     if (info.file.status === 'uploading') {
+    //         setLoading(true);
+    //         return;
+    //     }
+    //     if (info.file.status === 'done') {
+    //         // Get this url from response in real world.
+    //         getBase64(info.file.originFileObj, (url) => {
+    //             setLoading(false);
+    //             setImageUrl(url);
+    //         });
+    //     }
+    // };
+
+    // const uploadButton = (
+    //     <div>
+    //         {loading ? <LoadingOutlined /> : <PlusOutlined />}
+    //         <div style={{ marginTop: 8 }}>Upload</div>
+    //     </div>
+    // );
 
     return (
         <>
@@ -163,17 +181,17 @@ function EditCategory({ onOk, onCancel, title, open, data }) {
                             )}
                             <input type="file" onChange={(e) => handleImageChange(e, setImage1, setselectImagen1)} /> */}
 
-                            <Upload
-                                name="categoty_image"
-                                listType="picture-card"
-                                className="avatar-uploader"
-                                showUploadList={false}
-                                action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
-                                beforeUpload={beforeUpload}
-                                onChange={handleChange}
-                            >
-                                {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
-                            </Upload>
+                            <ImgCrop name="image-category" rotationSlider>
+                                <Upload
+                                    action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
+                                    listType="picture-card"
+                                    fileList={fileList}
+                                    onChange={onChange}
+                                    onPreview={onPreview}
+                                >
+                                    {fileList.length >= 1 ? null : uploadButton}
+                                </Upload>
+                            </ImgCrop>
                         </Form.Item>
                     </Form>
                 </div>

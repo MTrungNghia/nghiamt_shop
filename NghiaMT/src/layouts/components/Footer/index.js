@@ -12,10 +12,10 @@ function Footer() {
         <footer>
             <div className={cx('inner')}>
                 <div className={cx('content-footer')}>
-                    <Link to={routes.home} className={cx('logo')}>
+                    <Link to={routes.home} className={cx('logo', 'wid25')}>
                         <img src={images.logo} alt="logo" />
                     </Link>
-                    <div className={cx('policy')}>
+                    <div className={cx('policy', 'wid25')}>
                         <span className={cx('title')}>Chính sách</span>
                         <ul className={cx('list-policy')}>
                             <li>
@@ -40,11 +40,11 @@ function Footer() {
                             </li>
                         </ul>
                     </div>
-                    <div className={cx('map')}>
+                    <div className={cx('map', 'wid25')}>
                         <span className={cx('title')}>Map</span>
                         <img src={images.map} alt="logo" />
                     </div>
-                    <div className={cx('fanpage')}>
+                    <div className={cx('fanpage', 'wid25')}>
                         <span className={cx('title')}>Fanpage</span>
                         <img src={images.page} alt="logo" />
                     </div>

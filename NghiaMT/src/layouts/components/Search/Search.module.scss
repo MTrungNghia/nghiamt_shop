@@ -59,3 +59,35 @@
       background-color: rgba(22, 24, 35, 0.06);
     }
   }
+
+/* Mobile & tablet */
+@media (max-width: 1024px) {
+  .search  {
+    input {
+      padding-right: 10px;
+    }
+  }
+}
+
+/* Tablet */
+
+@media (min-width: 896px) and (max-width: 1023px) {
+  .search  {
+    width: 40%;
+    input {
+      padding-right: 10px;
+    }
+  }
+}
+
+@media (max-width: 895px) {
+  .search  {
+    width: 100%;
+  }
+}
+
+@media (max-width: 895px) {
+  .search  {
+    width: 100%;
+  }
+}

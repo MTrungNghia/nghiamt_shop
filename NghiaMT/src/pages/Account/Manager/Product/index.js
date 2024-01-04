@@ -10,7 +10,7 @@ import {
     Image,
 } from "antd";
 import axios from 'axios';
-import AddProduct from '~/pages/Admin/pages/ProductManager/ActionModal/AddProduct';
+import AddProduct from '../Product/ActionModal/AddProduct';
 import { ReloadOutlined } from '@ant-design/icons';
 import classNames from "classnames/bind";
 import styles from "./ProductManager.module.scss";
@@ -90,7 +90,7 @@ const ProductManager = () => {
             render: (text, data) => {
                 return (
                     <>
-                        <Button primary effect onClick={() => setSelectProductEdit(data.slug)} style={{ backgoundColor: '#77d2a1' }}>Edit</Button>
+                        <Button primary effect onClick={() => setSelectProductEdit(data.id)} style={{ backgoundColor: '#77d2a1' }}>Edit</Button>
                         <Button effect onClick={() => setSelectProductDelete(data.id)} style={{ marginLeft: '12px' }}>Delete</Button>
                     </>
 
@@ -160,77 +160,12 @@ const ProductManager = () => {
         setVisitableAdd(true);
     }
     const handleOk = () => {
-        // if (visitableEdit) {
-        //     let formData = new FormData();
-        //     formData.append('category_name', categoryName);
-        //     formData.append('description', categoryDes);
-        //     formData.append('cate_image', Image1);
-
-        //     console.log(formData);
-        //     console.log(categoryName);
-        //     console.log(categoryDes);
-        //     console.log(Image1);
-        //     axios.post(`http://127.0.0.1:8000/category/update/${selectProduct.id}/`, formData)
-        //         .then(function (response) {
-        //             // Xử lý phản hồi từ server (nếu cần)
-        //             console.log(response.data);
-        //             setReload(!reload);
-        //             alert("thanhf coong");
-        //             setVisitableEdit(false);
-        //         })
-        //         .catch(function (error) {
-        //             // Xử lý lỗi (nếu có)
-        //             console.error(error);
-        //             alert("Loi");
-
-        //         });
-        // }
-        // if (visitableAdd) {
-        //     let formData = new FormData();
-        //     formData.append('category_name', categoryName);
-        //     formData.append('description', categoryDes);
-        //     formData.append('cate_image', Image1);
-
-        //     console.log(formData);
-        //     console.log(categoryName);
-        //     console.log(categoryDes);
-        //     console.log(Image1);
-        //     axios.post(`http://127.0.0.1:8000/category/create/`, formData)
-        //         .then(function (response) {
-        //             // Xử lý phản hồi từ server (nếu cần)
-        //             console.log(response.data);
-        //             setReload(!reload);
-        //             alert("add thanhf coong");
-        //             setVisitableAdd(false);
-        //         })
-        //         .catch(function (error) {
-        //             // Xử lý lỗi (nếu có)
-        //             console.error(error);
-        //             alert("Loi");
-
-        //         });
-        // }
-        // if (visitableDelete) {
-        //     axios.delete(`http://127.0.0.1:8000/category/delete/${selectProductEdit.id}/`)
-        //         .then(function (response) {
-        //             // Xử lý phản hồi từ server (nếu cần)
-        //             console.log(response.data);
-        //             setReload(!reload);
-        //             alert("Xoas thanhf coong");
-        //             setVisitableDelete(false);
-        //         })
-        //         .catch(function (error) {
-        //             // Xử lý lỗi (nếu có)
-        //             console.error(error);
-        //             alert("Loi");
-
-        //         });
-        // }
-        setTimeout(() => {
-            // setVisitableDelete(false);
-            // setVisitableAdd(false);
-            // setVisitableEdit(false);
-        }, 2000);
+        setVisitableDelete(false);
+        setVisitableAdd(false);
+        setVisitableEdit(false);
+        setSelectProductEdit('');
+        setSelectProductDelete('');
+        setReload(!reload);
     };
 
     const handleReload = () => {
@@ -243,6 +178,7 @@ const ProductManager = () => {
         setVisitableEdit(false);
         setSelectProductEdit('');
         setSelectProductDelete('');
+        setReload(!reload);
     };
 
     function handleImageChange(e, setImage, setSelect) {

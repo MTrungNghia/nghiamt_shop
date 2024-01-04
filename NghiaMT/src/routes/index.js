@@ -25,12 +25,14 @@ import ProductManager from "~/pages/Account/Manager/Product";
 import CustomerManager from "~/pages/Account/Manager/Customer";
 import StatiscalReports from "~/pages/Account/Manager/StatiscalReports";
 import OrderManager from "~/pages/Account/Manager/Order";
+import ThanksCheckOut from "~/pages/CheckOut/ThanksCheckout";
 
 export const publicRoutes = [
     { path: config.routes.home, component: Home },
 
     { path: config.routes.cart, component: Cart },
     { path: config.routes.checkout, component: CheckOut, layout: null },
+    { path: config.routes.thanksCheckout, component: ThanksCheckOut },
 
     { path: config.routes.search, component: Search },
     { path: config.routes.searchImage, component: SeacrhImage },

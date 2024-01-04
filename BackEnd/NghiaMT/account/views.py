@@ -132,9 +132,9 @@ class LoginView(APIView):
 
         user = User.objects.filter(email=email).first()
         if user is None:
-            raise AuthenticationFailed('User not found!')
+            raise AuthenticationFailed('Tài khoản không tồn tại!')
         if not user.check_password(password):
-            raise AuthenticationFailed('Incorrect password!')
+            raise AuthenticationFailed('Sai password!')
 
         access_token = create_access_token(user.id)
         refresh_token = create_refresh_token(user.id)
@@ -175,7 +175,6 @@ class UserDetailLoginView(APIView):
 class UserView(APIView):
     def get(self, request):
         auth = get_authorization_header(request).split()
-        print(auth[1])
 
         if auth and len(auth) == 2:
             token = auth[1].decode('utf-8')
@@ -191,7 +190,6 @@ class UserView(APIView):
 class UserAdminView(APIView):
     def get(self, request):
         auth = get_authorization_header(request).split()
-        print(auth[1])
 
         if auth and len(auth) == 2:
             token = auth[1].decode('utf-8')
@@ -347,7 +345,6 @@ class GoogleAuthAPIView(APIView):
 class GetAddressView(APIView):
     def get(self, request):
         auth = get_authorization_header(request).split()
-        print(auth[1])
 
         if auth and len(auth) == 2:
             token = auth[1].decode('utf-8')

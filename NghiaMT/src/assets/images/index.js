@@ -23,6 +23,7 @@ const images = {
     // Slide
     slide: require('~/assets/images/slider/slide.png'),
     slide1: require('~/assets/images/slider/slider1.png'),
+    slide2: require('~/assets/images/slider/slider2.png'),
     // Category
     gundam: require('~/assets/images/category/gundam.png'),
     sdGundam: require('~/assets/images/category/sdgundam.png'),
@@ -41,6 +42,8 @@ const images = {
     bannerPokemon: require('~/assets/images/banner/pokemong.png'),
     // Product:
     gohan: require('~/assets/images/product/gohan.png'),
+    // Promotion
+    promotion: require('~/assets/images/banner/big_sale_banner.png'),
 
     support: require('~/assets/images/suport.png'),
 }

@@ -67,18 +67,18 @@ const StatiscalByProduct = () => {
                 <span>{Number(text * data?.price).toLocaleString()} ₫</span>
             )
         },
-        {
-            title: 'Hoạt động',
-            dataIndex: 'address',
-            render: (text, data) => {
-                return (
-                    <>
-                        <Button onClick={() => handleEdit(data)} style={{ backgoundColor: '#77d2a1' }}>Xem chi tiết</Button>
-                    </>
+        // {
+        //     title: 'Hoạt động',
+        //     dataIndex: 'address',
+        //     render: (text, data) => {
+        //         return (
+        //             <>
+        //                 <Button onClick={() => handleEdit(data)} style={{ backgoundColor: '#77d2a1' }}>Xem chi tiết</Button>
+        //             </>
 
-                )
-            }
-        },
+        //         )
+        //     }
+        // },
     ];
 
     const handleEdit = (data) => {
