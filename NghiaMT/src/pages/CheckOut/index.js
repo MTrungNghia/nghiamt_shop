@@ -164,6 +164,7 @@ function CheckOut() {
                 // reloadCart();
                 if (paymentMethod === 'MOMO') {
                     applyOrderId(response.data);
+                    deleteCart();
                     axios.post(`http://127.0.0.1:8000/order/payment-momo/`, {
                         order_id: response.data,
                         total_price: totalAllPrice,

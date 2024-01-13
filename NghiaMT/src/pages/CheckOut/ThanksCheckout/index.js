@@ -18,7 +18,7 @@ function ThanksCheckOut() {
     const orderInfo = queryParams.get('orderInfo');
     const [paymentStatus, setPaymentStatus] = useState(true);
 
-    const { deleteCart, orderWithCart } = useContext(CartContext);
+    const { deleteCart, orderWithCart, deleteCartNotToken } = useContext(CartContext);
 
     useEffect(() => {
         if (paymentMethod === 'COD') {
@@ -33,18 +33,17 @@ function ThanksCheckOut() {
                 if (orderId !== null) {
                     axios.post(`http://127.0.0.1:8000/order/success-order/${orderId}/`)
                         .then(function (response) {
-                            deleteCart();
-                            // Xử lý phản hồi từ server (nếu cần)
+                            deleteCartNotToken();
                             notification.success({ message: 'Tạo đơn hàng', description: 'Tạo và thanh toán đơn hàng thành công!' });
                             console.log(response.data);
                         })
                         .catch(function (error) {
-                            // Xử lý lỗi (nếu có)
                             console.error(error);
                             notification.error({ message: 'Tạo đơn hàng', description: 'Tạo đơn hàng thất bại!' });
                         });
                 }
                 setTimeout(() => {
+                    deleteCart();
                     navigate(routes.orders);
                 }, 5000);
             }

@@ -181,6 +181,25 @@ const CartProvider = ({ children }) => {
     };
 
     const deleteCart = async () => {
+        const csrfToken = Cookies.get('csrftoken');
+        try {
+            axios.delete(`cart/delete/${cart.cart.id}/`, {
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                },
+            })
+                .then((response) => {
+                    setLoading(!loading);
+                })
+                .catch(function (error) {
+
+                });
+        } catch (error) {
+            throw error;
+        }
+    };
+
+    const deleteCartNotToken = async () => {
         try {
             axios.delete(`cart/delete/${cart.cart.id}/`)
                 .then((response) => {
@@ -198,6 +217,7 @@ const CartProvider = ({ children }) => {
         cart,
         orderWithCart,
         listProduct,
+        deleteCartNotToken,
         // loading,
         addToCart,
         removeFromCart,

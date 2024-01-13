@@ -112,7 +112,9 @@ function EditProduct({ okOk, onCancel, title, open, data }) {
         formData.append('description', productDes);
         formData.append('price', productPrice);
         formData.append('inventory', productInventory);
-        formData.append('image', productImage);
+        if (productImage !== null) {
+            formData.append('image', productImage);
+        }
         console.log(formData);
         for (const key in formData) {
             if (formData.hasOwnProperty(key)) {

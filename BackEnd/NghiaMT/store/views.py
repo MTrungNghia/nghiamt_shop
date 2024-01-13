@@ -51,14 +51,19 @@ def ProductCreate(request):
     ImageList = list(filter(lambda x: x != 'null', ImageList))
 
     if serializer.is_valid():
-        serializer.save()
-        product = Product.objects.get(product_name=data['product_name'])
-        for imageItem in ImageList:
-            create_product(p_id=product, image_file=imageItem)
+        product_instance = serializer.save()
 
-        return Response(serializer.data, status=201)
+        # Kiểm tra xem sản phẩm có được tạo thành công hay không
+        if product_instance:
+            for imageItem in ImageList:
+                create_product(p_id=product_instance, image_file=imageItem)
+
+            return Response(serializer.data, status=201)
+        else:
+            return Response({"error": "Failed to create product"}, status=500)
 
     return Response(serializer.errors, status=400)
+
 
 
 @api_view(['GET'])
@@ -185,16 +190,13 @@ def ProductUpdate(request, pk):
     except Product.DoesNotExist:
         return Response({"error": "Product not found"}, status=404)
     data = request.data
-    ImageList = request.data.getlist('ImageList')
-    print(data)
+    # print(data)
+    # if(data['image'][0] == 'null'):
+    #     data['image'] = product.image
+    # print(data)
     serializer = ProductSerializer(instance=product, data=data)
-    ImageList = list(filter(lambda x: x != 'null', ImageList))
     if serializer.is_valid():
         serializer.save()
-        product = Product.objects.get(product_name=data['product_name'])
-        # for imageItem in ImageList:
-        #     create_product(p_id=product, image_file=imageItem)
-
         return Response(serializer.data, status=201)
 
     return Response(serializer.errors, status=400)
